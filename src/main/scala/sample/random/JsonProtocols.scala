@@ -1,9 +1,9 @@
-package sample
+package sample.random
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-import sample.CreditCard.Brand
+import CreditCard.Brand
 import spray.json._
 
 import Sex._

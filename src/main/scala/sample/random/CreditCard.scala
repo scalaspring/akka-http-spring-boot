@@ -1,8 +1,8 @@
-package sample
+package sample.random
 
 import java.time.LocalDate
 
-import sample.CreditCard.Brand
+import CreditCard.Brand
 
 import scala.util.Random
 

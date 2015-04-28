@@ -1,9 +1,9 @@
-package sample
+package sample.random
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.github.scalaspring.akka.http.{AkkaHttpAutoConfiguration, AkkaHttpService}
+import com.github.scalaspring.akka.http.{AkkaHttpServerAutoConfiguration, AkkaHttpService}
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Import
@@ -31,7 +31,7 @@ trait RandomService extends AkkaHttpService with JsonProtocols {
 
 
 @SpringBootApplication
-@Import(Array(classOf[AkkaHttpAutoConfiguration]))
+@Import(Array(classOf[AkkaHttpServerAutoConfiguration]))
 class Application extends RandomService {}
 
 object Application extends App {

@@ -1,20 +1,17 @@
 package com.github.scalaspring.akka.http
 
 import akka.http.scaladsl.server.Route
-import akka.stream.{ActorFlowMaterializer, FlowMaterializer}
-import com.github.scalaspring.akka.{AkkaAutoConfiguration, AkkaAutowiredImplicits, SpringLogging}
 import org.springframework.beans.factory.BeanCreationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.context.annotation.{Bean, Configuration, Import}
+import org.springframework.context.annotation.{Bean, Configuration}
 
 import scala.reflect.runtime.universe._
 
 @Configuration
 @EnableConfigurationProperties
-@Import(Array(classOf[AkkaAutoConfiguration]))
-class AkkaHttpAutoConfiguration extends AkkaAutowiredImplicits with SpringLogging {
+class AkkaHttpServerAutoConfiguration extends AkkaStreamsAutoConfiguration {
 
   // This is intentionally not required, even though a route is required, so that we can provide a useful message
   // below if the user doesn't define a route
@@ -39,8 +36,5 @@ class AkkaHttpAutoConfiguration extends AkkaAutowiredImplicits with SpringLoggin
     }
     else ServerBindingLifecycle(settings, route)
   }
-
-  @Bean @ConditionalOnMissingBean(Array(classOf[FlowMaterializer]))
-  def flowMaterializer = ActorFlowMaterializer()
 
 }

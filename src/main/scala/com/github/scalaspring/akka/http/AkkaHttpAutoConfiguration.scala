@@ -1,6 +1,6 @@
 package com.github.scalaspring.akka.http
 
-import akka.http.server._
+import akka.http.scaladsl.server.Route
 import akka.stream.{ActorFlowMaterializer, FlowMaterializer}
 import com.github.scalaspring.akka.{AkkaAutoConfiguration, AkkaAutowiredImplicits, SpringLogging}
 import org.springframework.beans.factory.BeanCreationException

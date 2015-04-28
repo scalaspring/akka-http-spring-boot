@@ -1,9 +1,9 @@
 package sample
 
-import akka.http.marshallers.sprayjson.SprayJsonSupport._
-import akka.http.server.Directives._
-import akka.http.server.Route
-import com.github.scalaspring.akka.http.{AkkaHttpAutowiredImplicits, AkkaHttpAutoConfiguration}
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
+import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server.Route
+import com.github.scalaspring.akka.http.{AkkaHttpAutoConfiguration, AkkaHttpAutowiredImplicits}
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Import}

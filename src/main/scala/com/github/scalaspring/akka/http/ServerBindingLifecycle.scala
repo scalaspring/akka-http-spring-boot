@@ -2,15 +2,14 @@ package com.github.scalaspring.akka.http
 
 import java.util.concurrent.atomic.AtomicReference
 
-import akka.http.Http
-import akka.http.Http.ServerBinding
-import akka.http.server.Route
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.Http.ServerBinding
+import akka.http.scaladsl.server.Route
 import com.typesafe.scalalogging.StrictLogging
 import org.springframework.context.SmartLifecycle
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
-
 
 
 object ServerBindingLifecycle {

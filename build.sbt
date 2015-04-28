@@ -21,7 +21,7 @@ lazy val root = (project in file(".")).
       "com.typesafe.akka" %% "akka-actor" % akkaVersion,
       "org.springframework" % "spring-context" % springVersion,
       "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
-      "com.typesafe.akka" %% "akka-http-experimental" % akkaHttpVersion,
+      "com.typesafe.akka" %% "akka-http-scala-experimental" % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaHttpVersion,
       "com.github.scalaspring" %% "akka-spring-boot" % "0.1.2-SNAPSHOT",
       "com.github.tototoshi" %% "scala-csv" % "1.2.1"

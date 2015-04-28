@@ -3,16 +3,15 @@ package sample
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import com.github.scalaspring.akka.http.{AkkaHttpAutoConfiguration, AkkaHttpAutowiredImplicits}
+import com.github.scalaspring.akka.http.{AkkaHttpAutoConfiguration, AkkaHttpService}
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.context.annotation.{Bean, Import}
+import org.springframework.context.annotation.Import
 
 
-trait Service extends AkkaHttpAutowiredImplicits with JsonProtocols {
+trait RandomService extends AkkaHttpService with JsonProtocols {
 
-  @Bean
-  def route: Route = {
+  override val route: Route = {
     get {
       pathPrefix("random") {
         path("name") {
@@ -27,12 +26,13 @@ trait Service extends AkkaHttpAutowiredImplicits with JsonProtocols {
       }
     }
   }
+
 }
 
 
 @SpringBootApplication
 @Import(Array(classOf[AkkaHttpAutoConfiguration]))
-class Application extends Service {}
+class Application extends RandomService {}
 
 object Application extends App {
   SpringApplication.run(classOf[Application], args: _*)

@@ -1,4 +1,4 @@
-package com.github.lancearlaus.akka.spring
+package com.github.scalaspring.akka.http
 
 import akka.actor.{Actor, ActorRef}
 import akka.pattern.AskSupport

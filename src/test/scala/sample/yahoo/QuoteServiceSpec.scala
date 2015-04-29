@@ -1,9 +1,10 @@
 package sample.yahoo
 
 import java.io.IOException
-import java.time.LocalDate
+import java.time.{Month, LocalDate}
 
-import com.github.scalaspring.akka.http.AkkaStreamsAutoConfiguration
+import akka.stream.scaladsl.Sink
+import com.github.scalaspring.akka.http.{AkkaHttpAutowiredImplicits, AkkaStreamsAutoConfiguration}
 import com.github.scalaspring.scalatest.TestContextManagement
 import com.typesafe.scalalogging.StrictLogging
 import org.scalatest.concurrent.ScalaFutures
@@ -22,7 +23,7 @@ import scala.concurrent.duration._
   classes = Array(classOf[QuoteServiceSpec])
 )
 @Import(Array(classOf[AkkaStreamsAutoConfiguration]))
-class QuoteServiceSpec extends FlatSpec with TestContextManagement with Matchers with EitherValues with ScalaFutures with StrictLogging {
+class QuoteServiceSpec extends FlatSpec with TestContextManagement with AkkaHttpAutowiredImplicits with Matchers with EitherValues with ScalaFutures with StrictLogging {
 
   // Yahoo takes a few seconds to respond
   implicit val patience = PatienceConfig((10 seconds))
@@ -34,17 +35,26 @@ class QuoteServiceSpec extends FlatSpec with TestContextManagement with Matchers
     val getFuture = quotes.historical("YHOO", LocalDate.now().minusWeeks(8))
 
     whenReady(getFuture) { response =>
-      response.right.value.isEmpty shouldBe false
+      response.right.value shouldBe defined
       logger.info(s"data:\n${response.right.value.mkString("\n")}")
+      response.right.get.map { s => s.to(Sink.foreach(println(_))).run() }
+        //foreach { opt => opt.map { s => s.runForeach(logger.info(_.)) } }
     }
   }
 
-  "Quote service" should "fail on bad symbol" in {
+  it should "not return data for bad symbol" in {
     val getFuture = quotes.historical("BLAH", LocalDate.now().minusWeeks(8))
 
     whenReady(getFuture) { response =>
-      response.left.value.isEmpty shouldBe false
-      logger.info(s"error: ${response.left.value}")
+      response.right.value shouldBe empty
+    }
+  }
+
+  it should "not return data for bad date range" in {
+    val getFuture = quotes.historical("FB", LocalDate.of(2010, Month.JANUARY, 1), LocalDate.of(2011, Month.JANUARY, 1))
+
+    whenReady(getFuture) { response =>
+      response.right.value shouldBe empty
     }
   }
 

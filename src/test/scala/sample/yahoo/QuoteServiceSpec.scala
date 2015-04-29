@@ -1,9 +1,7 @@
 package sample.yahoo
 
-import java.io.IOException
-import java.time.{Month, LocalDate}
+import java.time.{LocalDate, Month, Period}
 
-import akka.stream.scaladsl.Sink
 import com.github.scalaspring.akka.http.{AkkaHttpAutowiredImplicits, AkkaStreamsAutoConfiguration}
 import com.github.scalaspring.scalatest.TestContextManagement
 import com.typesafe.scalalogging.StrictLogging
@@ -25,37 +23,31 @@ import scala.concurrent.duration._
 @Import(Array(classOf[AkkaStreamsAutoConfiguration]))
 class QuoteServiceSpec extends FlatSpec with TestContextManagement with AkkaHttpAutowiredImplicits with Matchers with EitherValues with ScalaFutures with StrictLogging {
 
-  // Yahoo takes a few seconds to respond
+  // Yahoo takes more than a second to respond
   implicit val patience = PatienceConfig((10 seconds))
 
-  @Autowired val quotes: QuoteService = null
+  @Autowired val quoteService: QuoteService = null
 
 
   "Quote service" should "return data" in {
-    val getFuture = quotes.historical("YHOO", LocalDate.now().minusWeeks(8))
+    val getFuture = quoteService.history("YHOO", Period.ofWeeks(8))
+    val future = getFuture.flatMap(_.runFold(Seq[Quote]())((s, m) => s :+ m))
 
-    whenReady(getFuture) { response =>
-      response.right.value shouldBe defined
-      logger.info(s"data:\n${response.right.value.mkString("\n")}")
-      response.right.get.map { s => s.to(Sink.foreach(println(_))).run() }
-        //foreach { opt => opt.map { s => s.runForeach(logger.info(_.)) } }
+    whenReady(future) { quotes =>
+      quotes should not be empty
+      //logger.info(s"data:\n${quotes.mkString("\n")}")
     }
   }
 
-  it should "not return data for bad symbol" in {
-    val getFuture = quotes.historical("BLAH", LocalDate.now().minusWeeks(8))
-
-    whenReady(getFuture) { response =>
-      response.right.value shouldBe empty
-    }
+  it should "throw an exception for bad symbol" in {
+    val future = quoteService.history("BLAH", Period.ofWeeks(8))
+    whenReady(future.failed)(_ shouldBe an [IllegalArgumentException])
   }
 
-  it should "not return data for bad date range" in {
-    val getFuture = quotes.historical("FB", LocalDate.of(2010, Month.JANUARY, 1), LocalDate.of(2011, Month.JANUARY, 1))
-
-    whenReady(getFuture) { response =>
-      response.right.value shouldBe empty
-    }
+  it should "throw an exception for bad date range" in {
+    // Note: Facebook went public in 2012
+    val future = quoteService.history("FB", LocalDate.of(2010, Month.JANUARY, 1), LocalDate.of(2011, Month.JANUARY, 1))
+    whenReady(future.failed)(_ shouldBe an [IllegalArgumentException])
   }
 
 }

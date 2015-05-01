@@ -8,7 +8,7 @@ import com.github.scalaspring.akka._
 import com.github.scalaspring.scalatest.TestContextManagement
 import com.typesafe.scalalogging.StrictLogging
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{FlatSpec, Matchers}
+import org.scalatest.{Ignore, FlatSpec, Matchers}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.context.annotation.{Bean, ComponentScan, Import}
@@ -20,6 +20,7 @@ import scala.concurrent.duration._
   loader = classOf[SpringApplicationContextLoader],
   classes = Array(classOf[AkkaAutoConfigurationSpec.Configuration])
 )
+@Ignore
 class AkkaAutoConfigurationSpec extends FlatSpec with TestContextManagement with Matchers with AskSupport with ScalaFutures with StrictLogging {
 
   implicit val timeout: Timeout = (1 seconds)

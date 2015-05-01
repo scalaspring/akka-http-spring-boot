@@ -2,7 +2,7 @@ import sbt.Keys._
 
 // Common dependency versions
 val akkaVersion = "2.3.9"
-val akkaHttpVersion = "1.0-RC1"
+val akkaHttpVersion = "1.0-RC2"
 val springVersion = "4.1.6.RELEASE"
 val springBootVersion = "1.2.3.RELEASE"
 
@@ -24,7 +24,8 @@ lazy val root = (project in file(".")).
       "com.typesafe.akka" %% "akka-http-scala-experimental" % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaHttpVersion,
       "com.github.scalaspring" %% "akka-spring-boot" % "0.1.2-SNAPSHOT",
-      "com.github.tototoshi" %% "scala-csv" % "1.2.1"
+      "com.github.tototoshi" %% "scala-csv" % "1.2.1",
+      "org.apache.commons" % "commons-collections4" % "4.0"
       // The following dependencies support configuration validation
       //"javax.validation" % "validation-api" % "1.1.0.Final",
       //"javax.el" % "javax.el-api" % "3.0.1-b04",

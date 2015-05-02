@@ -42,3 +42,7 @@ class Ordered[T](ascending: Boolean = true, strict: Boolean = true)(implicit ord
   }
 
 }
+
+object Ordered {
+  def apply[T](ascending: Boolean = true, strict: Boolean = true)(implicit ordering: Ordering[T]) = new Ordered[T](ascending, strict)(ordering)
+}

@@ -1,11 +1,11 @@
-package sample.yahoo
+package sample.flow
 
 import akka.stream.stage.{Context, PushStage, SyncDirective}
 
 /**
  * Implements a sliding window on a stream of elements.
  */
-class SlidingWindow[T](size: Int) extends PushStage[T, Seq[T]] {
+case class SlidingWindow[T](size: Int) extends PushStage[T, Seq[T]] {
 
   require(size > 0, "window size must be positive")
 

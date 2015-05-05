@@ -8,6 +8,7 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers}
 import org.springframework.context.annotation.{Configuration, Import}
 import org.springframework.test.context.ContextConfiguration
+import sample.flow.Reverse
 
 @Configuration
 @ContextConfiguration(classes = Array(classOf[ReverseSpec]))

@@ -1,4 +1,4 @@
-package sample.yahoo
+package sample.flow
 
 import akka.stream.stage._
 
@@ -11,9 +11,9 @@ import scala.collection.mutable
  *
  * NOTE: Never use this stage on unbounded streams.
  */
-class Reverse[T] extends StatefulStage[T, T] {
+case class Reverse[T]() extends StatefulStage[T, T] {
 
-  val elements = mutable.Stack[T]()
+  private val elements = mutable.Stack[T]()
 
   override def initial = new StageState[T, T] {
     override def onPush(elem: T, ctx: Context[T]): SyncDirective = {
@@ -24,8 +24,4 @@ class Reverse[T] extends StatefulStage[T, T] {
 
   override def onUpstreamFinish(ctx: Context[T]): TerminationDirective = terminationEmit(elements.iterator, ctx)
 
-}
-
-object Reverse {
-  def apply[T] = new Reverse[T]
 }

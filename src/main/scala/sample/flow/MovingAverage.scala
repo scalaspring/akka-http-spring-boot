@@ -1,4 +1,4 @@
-package sample.yahoo
+package sample.flow
 
 import akka.stream.stage.{Context, PushStage, SyncDirective}
 
@@ -11,7 +11,7 @@ import scala.collection.mutable
  * @tparam T numeric element type (Int, Long, Double, etc.)
  */
 // See: https://twitter.github.io/scala_school/advanced-types.html
-class MovingAverage[T](n: Int)(implicit num: Numeric[T]) extends PushStage[T, Double] {
+case class MovingAverage[T](n: Int)(implicit num: Numeric[T]) extends PushStage[T, Double] {
 
   require(n > 0, "moving average window size must be positive")
 
@@ -24,8 +24,4 @@ class MovingAverage[T](n: Int)(implicit num: Numeric[T]) extends PushStage[T, Do
     sum = num.plus(sum, elem)
     ctx.push(num.toDouble(sum) / queue.size)
   }
-}
-
-object MovingAverage {
-  def apply[T](n: Int)(implicit num: Numeric[T]) = new MovingAverage[T](n)(num)
 }

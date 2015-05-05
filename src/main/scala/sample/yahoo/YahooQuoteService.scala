@@ -19,7 +19,14 @@ import org.springframework.stereotype.Component
 import scala.concurrent.Future
 
 trait QuoteService {
+  /**
+   * Returns daily historical quotes for a specified trailing period, e.g. the past month.
+   */
   def history(symbol: String, period: Period): Future[Source[Quote, Unit]]
+
+  /**
+   * Returns daily historical quotes for a specified date range.
+   */
   def history(symbol: String, begin: LocalDate, end: LocalDate): Future[Source[Quote, Unit]]
 }
 
@@ -47,7 +54,8 @@ class YahooQuoteService extends AkkaHttpClient with QuoteService with StrictLogg
 
     logger.info(s"Sending request for $uri")
 
-    request(RequestBuilding.Get(uri)).flatMap(response =>
+    request(RequestBuilding.Get(uri)).flatMap { response =>
+      logger.info(s"Received response with status ${response.status} from $uri")
       response.status match {
         case OK => Unmarshal(response.entity).to[String].map(s => Source(() => CSVReader.open(new StringReader(s)).iteratorWithHeaders))
         case NotFound => Future.failed(new IllegalArgumentException(s"Bad symbol or invalid date range (symbol: $symbol, begin: $begin, end: $end, uri: $uri"))
@@ -57,7 +65,7 @@ class YahooQuoteService extends AkkaHttpClient with QuoteService with StrictLogg
           Future.failed(new IOException(error))
         }
       }
-    )
+    }
   }
 
 }

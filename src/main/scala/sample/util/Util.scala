@@ -1,4 +1,4 @@
-package sample.random
+package sample.util
 
 import com.github.tototoshi.csv.CSVReader
 

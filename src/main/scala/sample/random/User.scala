@@ -1,5 +1,7 @@
 package sample.random
 
+import sample.util.Util
+
 import scala.util.Random
 
 

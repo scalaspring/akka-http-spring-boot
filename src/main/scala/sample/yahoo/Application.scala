@@ -6,7 +6,7 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.{MediaTypes, ContentTypes, ContentType, HttpEntity}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.stream.scaladsl.{Sink, Source}
+import akka.stream.scaladsl.{Flow, Sink, Source}
 import akka.util.ByteString
 import com.github.scalaspring.akka.http.{AkkaHttpServerAutoConfiguration, AkkaHttpService}
 import com.github.tototoshi.csv.CSVWriter
@@ -25,6 +25,11 @@ trait BollingerQuoteService extends AkkaHttpService {
 
   def getQuotes(symbol: String): Future[Source[ByteString, Unit]] = {
     val dataFuture: Future[Source[Quote, Unit]] = quoteService.history(symbol, Period.ofMonths(1))
+
+//    dataFuture.flatMap { source =>
+//      source
+//    }
+    //Flow[ByteString].
 
     dataFuture.map(_.map(q => ByteString(q.toString)))
   }

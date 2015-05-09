@@ -25,7 +25,7 @@ class SlidingStatisticsSpec extends FlatSpec with TestContextManagement with Akk
 
   "Sliding statistics stage" should "properly calculate all valid permutations" in {
     forAll(permutations) { (window: Int, input: List[Int], expected: List[Expected]) =>
-      val future = Source(input).via(Flow[Int].slidingWindow(window).statistics).runWith(Sink.fold(List[Statistics[_]]())(_ :+ _))
+      val future = Source(input).via(Flow[Int].slidingStatistics(window)).runWith(Sink.fold(List[Statistics[_]]())(_ :+ _))
       whenReady(future) { result =>
 
         result.zip(expected).foreach { pair =>

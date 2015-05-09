@@ -1,7 +1,7 @@
 import sbt.Keys._
 
 // Common dependency versions
-val akkaVersion = "2.3.9"
+val akkaVersion = "2.3.10"
 val akkaHttpVersion = "1.0-RC2"
 val springVersion = "4.1.6.RELEASE"
 val springBootVersion = "1.2.3.RELEASE"
@@ -18,7 +18,7 @@ lazy val root = (project in file(".")).
     resolvers           += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
     libraryDependencies ++= Seq(
       "com.typesafe.scala-logging" %% "scala-logging" % "3.+",
-      "com.typesafe.akka" %% "akka-actor" % akkaVersion,
+      //"com.typesafe.akka" %% "akka-actor" % akkaVersion,
       "org.springframework" % "spring-context" % springVersion,
       "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
       "com.typesafe.akka" %% "akka-http-scala-experimental" % akkaHttpVersion,

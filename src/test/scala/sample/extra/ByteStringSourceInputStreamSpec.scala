@@ -3,8 +3,12 @@ package sample.extra
 import akka.stream.scaladsl.Source
 import akka.util.ByteString
 import com.github.scalaspring.akka.http.{AkkaHttpAutowiredImplicits, AkkaStreamsAutoConfiguration}
+import com.github.scalaspring.scalatest.TestContextManagement
 import com.typesafe.scalalogging.StrictLogging
+import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.{Matchers, FlatSpec}
 import org.springframework.context.annotation.{Configuration, Import}
+import org.springframework.test.context.ContextConfiguration
 
 @Configuration
 @ContextConfiguration(classes = Array(classOf[ByteStringSourceInputStreamSpec]))

@@ -55,6 +55,20 @@ class BollingerSpec extends FlatSpec with TestContextManagement with AkkaHttpAut
     (zip.out)
   }
 
+  def dropSinkSource(num: Int, diff: Int) = Source() {  implicit b =>
+    import akka.stream.scaladsl.FlowGraph.Implicits._
+
+    val source = b.add(Source(1 to (num + diff)))
+    val bcast = b.add(Broadcast[Int](2))
+    val drop = b.add(Flow[Int].drop(diff))
+    val sink0 = b.add(Sink.ignore)
+
+    source ~> bcast ~> sink0
+              bcast ~> drop
+
+    (drop.outlet)
+  }
+
   def zipDropSource(num: Int, diff: Int) = Source() {  implicit b =>
     import akka.stream.scaladsl.FlowGraph.Implicits._
 
@@ -69,21 +83,31 @@ class BollingerSpec extends FlatSpec with TestContextManagement with AkkaHttpAut
     (zip.out)
   }
 
+  // PASS
   "Zip" should "complete with same length streams" in {
     val future: Future[Int] = zipSource(10, 10).runWith(Sink.fold(0)((s, i) => s + 1))
     whenReady(future)(_ shouldBe 10)
   }
 
+  // PASS
   it should "complete with different length streams" in {
     val future: Future[Int] = zipSource(10, 20).runWith(Sink.fold(0)((s, i) => s + 1))
     whenReady(future)(_ shouldBe 10)
   }
 
+  // PASS
+  "Sink with drop" should "complete with different length streams" in {
+    val future: Future[Int] = dropSinkSource(10, 10).runWith(Sink.fold(0)((s, i) => s + 1))
+    whenReady(future)(_ shouldBe 10)
+  }
+
+  // PASS
   "Zip with drop" should "complete with same length streams" in {
     val future: Future[Int] = zipDropSource(10, 0).runWith(Sink.fold(0)((s, i) => s + 1))
     whenReady(future)(_ shouldBe 10)
   }
 
+  // FAIL
   it should "complete with different length streams" in {
     val future: Future[Int] = zipDropSource(10, 10).runWith(Sink.fold(0)((s, i) => s + 1))
     whenReady(future)(_ shouldBe 10)

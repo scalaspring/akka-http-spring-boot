@@ -30,7 +30,10 @@ trait BollingerQuoteService extends AkkaHttpService {
     (q + ("BB Lower" -> fmt(b.lower)) + ("BB Middle" -> fmt(b.middle)) + ("BB Upper" -> fmt(b.upper)))
   }
 
-  lazy val bollingerGraph = FlowGraph.partial() { implicit b =>
+  // Calculates and adds Bollinger band points to a Quote stream
+  // Note: Assumes quotes are in descending date order, as provided by Yahoo Finance
+  // Note: The number of quotes emitted will be reduced by the window size (dropped from the tail)
+  lazy val bollingerFlow = Flow() { implicit b =>
 
     val extract = b.add(Flow[Quote].map(_("Close").toDouble))
     val statistics = b.add(Flow[Double].slidingStatistics(window))
@@ -45,13 +48,29 @@ trait BollingerQuoteService extends AkkaHttpService {
     broadcast ~> extract ~> statistics ~> bollinger ~> zip.in1
                                                        zip.out ~> merge
 
-    FlowShape(broadcast.in, merge.outlet)
+    (broadcast.in, merge.outlet)
   }
 
-  // https://groups.google.com/forum/#!searchin/akka-user/akka-streams$20outlet/akka-user/Sivt8uXuRH8/U48pnOuaisMJ
-  lazy val bollingerFlow = Flow() { implicit b =>
-    val g = b.add(bollingerGraph)
-    (g.inlet, g.outlet)
+
+  // Convert a stream of quotes to CSV, first writing header then rows
+  lazy val csvFlow = Flow() { implicit b =>
+    val columns = b.add(Flow[Quote].take(1).map(_.keySet))
+    val header = b.add(Flow[(Set[String], Quote)].take(1).map(_._2.mkString(",")))
+    val rows = b.add(Flow[(Set[String], Quote)].map { p =>
+      val (cols, q) = p
+      cols.map(q(_)).mkString(",")
+    })
+    val bcast1 = b.add(Broadcast[Quote](2))
+    val bcast2 = b.add(Broadcast[(Set[String], Quote)](2))
+    val concat = b.add(Concat[String])
+    val zip = b.add(Zip[Set[String], Quote])
+
+    bcast1 ~> columns ~> zip.in0
+    bcast1            ~> zip.in1
+                         zip.out ~> bcast2 ~> header ~> concat
+                                    bcast2 ~> rows ~> concat
+
+    (bcast1.in, concat.out)
   }
 
   def getQuotes(symbol: String): Future[Source[ByteString, Unit]] = {

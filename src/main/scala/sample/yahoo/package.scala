@@ -2,9 +2,11 @@ package sample
 
 import java.time.LocalDate
 
+import scala.collection.mutable
+
 package object yahoo {
 
-  type Quote = Map[String, String]
+  type Quote = mutable.Map[String, String]
 
   implicit def quoteToLocalDate(quote: Quote): LocalDate = LocalDate.parse(quote("Date"))
 

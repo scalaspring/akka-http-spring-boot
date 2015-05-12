@@ -1,7 +1,6 @@
 package sample.flow
 
-
-case class Statistics[T](population: Boolean, M: Double, S: Double, k: Int)(implicit num: Numeric[T]) {
+case class Statistics[T] private (population: Boolean, M: Double, S: Double, k: Int)(implicit num: Numeric[T]) {
 
   def apply(values: Iterable[T]): Statistics[T] = values.foldLeft(this)((s, x) => s(x))
 
@@ -15,13 +14,13 @@ case class Statistics[T](population: Boolean, M: Double, S: Double, k: Int)(impl
     copy(M = newM, S = newS, k = newK)
   }
 
-
   def mean: Double = M
-  def variance: Double = if (k < 3) 0 else if (population) (S / (k-1)) else (S / (k-2))
+  def variance: Double = if (k <= 2) 0 else if (population) (S / (k-1)) else (S / (k-2))
   def stddev: Double = Math.sqrt(variance)
 
 }
 
 object Statistics {
-  def apply[T](values: Iterable[T] = Nil, population: Boolean = false)(implicit num: Numeric[T]) = (new Statistics[T](population, 0, 0, 1)(num))(values)
+  def apply[T](values: Iterable[T] = Nil, population: Boolean = false)(implicit num: Numeric[T]) =
+    (new Statistics[T](population, 0, 0, 1)(num))(values)
 }

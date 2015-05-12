@@ -1,4 +1,4 @@
-package sample.flow
+package sample.extra
 
 import akka.stream.stage._
 

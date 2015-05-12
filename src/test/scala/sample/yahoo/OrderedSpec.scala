@@ -9,7 +9,7 @@ import org.scalatest.{FlatSpec, Matchers}
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.springframework.context.annotation.{Configuration, Import}
 import org.springframework.test.context.ContextConfiguration
-import sample.flow.Ordered
+import sample.extra.Ordered
 
 @Configuration
 @ContextConfiguration(classes = Array(classOf[OrderedSpec]))

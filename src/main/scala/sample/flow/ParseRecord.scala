@@ -16,9 +16,10 @@ class ParseRecord(separator: String, maximumLineBytes: Int) extends StatefulStag
   def initial = new State {
     override def onPush(chunk: ByteString, ctx: Context[String]): SyncDirective = {
       buffer ++= chunk
-      if (buffer.size > maximumLineBytes)
+      // Added second condition so we don't fail if we get a single large chunk
+      if (buffer.size > maximumLineBytes && buffer.size > chunk.size)
         ctx.fail(new IllegalStateException(s"Read ${buffer.size} bytes " +
-          s"which is more than $maximumLineBytes without seeing a line terminator (buffer: $buffer)"))
+          s"which is more than $maximumLineBytes without seeing a line terminator"))
       else emit(doParse(Vector.empty).iterator, ctx)
     }
 

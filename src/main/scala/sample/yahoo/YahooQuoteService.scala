@@ -45,40 +45,6 @@ class YahooQuoteService extends AkkaHttpClient with QuoteService with StrictLogg
   @Value("${services.yahoo.finance.url:http://real-chart.finance.yahoo.com/table.csv}")
   val url: URL = null
 
-  val logLevels = OperationAttributes.logLevels(onElement = DebugLevel)
-
-  protected lazy val parseResponseFlow = Flow() { implicit b =>
-    var i = 0
-    def extractRecord(record: Array[String]): String = {
-      i = i + 1
-      s"$i: ${record(0)}"
-    }
-    var j = 0
-    def extractMerged(merged: (collection.Map[String, String])): String = {
-      j = j + 1
-      s"$j: ${merged.values.head}"
-    }
-    val parse = b.add(Flow[ByteString].transform[String](() => ParseRecord()).map(_.split(',')).log("parse", extractRecord).withAttributes(logLevels))
-    val zipHeader = b.add(Flow[Array[String]].prefixAndTail(1).map(pt => pt._2.map((pt._1.head, _))).flatten(FlattenStrategy.concat))
-    val convert = b.add(Flow[(Array[String], Array[String])].map(t => t._1.zip(t._2).foldLeft(mutable.LinkedHashMap[String, String]())((m, p) => m += p).asInstanceOf[Quote]).log("convert", extractMerged).withAttributes(logLevels))
-
-//    val bcast = b.add(Broadcast[Array[String]](2))
-//    val header = b.add(Flow[Array[String]].take(1).expand[Array[String], Array[String]](identity)(s => (s, s))/*.buffer(1, OverflowStrategy.backpressure)*/)
-//    val rows = b.add(Flow[Array[String]].drop(1))
-//    val zip = b.add(Zip[Array[String], Array[String]])
-//    val print = b.add(Sink.fold[Int, Array[String]](0){ (i, r) => logger.info(s"parsed record $i: ${r.mkString(",")}"); i + 1 })
-//    val merge = b.add(Flow[(Array[String], Array[String])].map(t => t._1.zip(t._2).foldLeft(mutable.LinkedHashMap[String, String]())((m, p) => m += p ).asInstanceOf[Quote]).log("merge", extractMerged).withAttributes(logLevels))
-
-//    parse ~> bcast ~> header ~> zip.in0
-//               bcast ~> rows   ~> zip.in1
-//                                  zip.out ~> merge
-  //             bcast ~> print
-
-    parse ~> zipHeader ~> convert
-
-    (parse.inlet, convert.outlet)
-  }
-
   protected lazy val connectionFlow = Http().outgoingConnection(url.getHost)
 
   protected def request(request: HttpRequest): Future[HttpResponse] = Source.single(request).via(connectionFlow).runWith(Sink.head)
@@ -90,9 +56,22 @@ class YahooQuoteService extends AkkaHttpClient with QuoteService with StrictLogg
       "d" -> (end.getMonthValue - 1).toString, "e" -> end.getDayOfMonth.toString, "f" -> end.getYear.toString
     )
 
+  // Converts a ByteString stream into a Quote stream
+  protected lazy val parseResponseFlow = Flow() { implicit b =>
+    val parse = b.add(Flow[ByteString].transform[String](() => ParseRecord()).map(_.split(',')))
+    val zipHeader = b.add(Flow[Array[String]].prefixAndTail(1).map(pt => pt._2.map((pt._1.head, _))).flatten(FlattenStrategy.concat))
+    val convert = b.add(Flow[(Array[String], Array[String])].map(t => t._1.zip(t._2).foldLeft(Quote())((q, t) => q += t)))
+
+    parse ~> zipHeader ~> convert
+
+    (parse.inlet, convert.outlet)
+  }
+
   override def history(symbol: String, period: Period): Future[Source[Quote, _]] = history(symbol, LocalDate.now.minus(period), LocalDate.now)
 
   override def history(symbol: String, begin: LocalDate, end: LocalDate): Future[Source[Quote, _]] = {
+    require(end.isAfter(begin) || end.isEqual(begin), "invalid date range - end date must be on or after begin date")
+
     val uri = Uri(url.getPath).withQuery(params(symbol, begin, end))
 
     logger.info(s"Sending request for $uri")

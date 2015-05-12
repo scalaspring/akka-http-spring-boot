@@ -1,7 +1,7 @@
 package com.github.scalaspring.akka.http
 
 import akka.stream.{ActorFlowMaterializer, FlowMaterializer}
-import com.github.scalaspring.akka.{SpringLogging, AkkaAutowiredImplicits, AkkaAutoConfiguration}
+import com.github.scalaspring.akka.{AkkaAutoConfiguration, AkkaAutowiredImplicits, SpringLogging}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.{Bean, Configuration, Import}

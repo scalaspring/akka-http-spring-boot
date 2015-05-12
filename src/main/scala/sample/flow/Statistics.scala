@@ -2,7 +2,7 @@ package sample.flow
 
 case class Statistics[T] private (population: Boolean, M: Double, S: Double, k: Int)(implicit num: Numeric[T]) {
 
-  def apply(values: Iterable[T]): Statistics[T] = values.foldLeft(this)((s, x) => s(x))
+  def apply(values: Iterator[T]): Statistics[T] = values.foldLeft(this)((s, x) => s(x))
 
   // See: http://stackoverflow.com/questions/895929/how-do-i-determine-the-standard-deviation-stddev-of-a-set-of-values
   def apply(value: T): Statistics[T] = {
@@ -21,6 +21,8 @@ case class Statistics[T] private (population: Boolean, M: Double, S: Double, k: 
 }
 
 object Statistics {
-  def apply[T](values: Iterable[T] = Nil, population: Boolean = false)(implicit num: Numeric[T]) =
-    (new Statistics[T](population, 0, 0, 1)(num))(values)
+  def apply[T](values: Iterator[T] = Iterator.empty)(implicit num: Numeric[T]) =
+    (new Statistics[T](false, 0, 0, 1)(num))(values)
+  def apply[T](values: Iterable[T])(implicit num: Numeric[T]) =
+    (new Statistics[T](false, 0, 0, 1)(num))(values.iterator)
 }

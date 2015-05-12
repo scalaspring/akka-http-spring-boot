@@ -1,13 +1,16 @@
 package sample.yahoo
 
+import java.nio.ByteBuffer
+
 import akka.stream.OverflowStrategy
+import akka.stream.scaladsl.FlowGraph.Implicits._
 import akka.stream.scaladsl._
-import sample.flow.Statistics
+import akka.util.ByteString
+import sample.flow.{Statistics, _}
+import sample.yahoo.Bollinger._
 
 import scala.collection.immutable
-import akka.stream.scaladsl.FlowGraph.Implicits._
-import Bollinger._
-import sample.flow._
+import scala.concurrent.Future
 
 
 object Flows {
@@ -20,9 +23,9 @@ object Flows {
     val in = b.add(Broadcast[Quote](2))
     val extract = b.add(Flow[Quote].map(_("Close").toDouble))
     val statistics = b.add(Flow[Double].slidingStatistics(window))
-    val bollinger = b.add(Flow[Statistics[Double]].map(Bollinger(_)).drop(window - 1))
+    val bollinger = b.add(Flow[Statistics[Double]].mapAsync(4)(s => Future.successful(Bollinger(s))))
     // Need buffer to avoid deadlock. See: https://github.com/akka/akka/issues/17435
-    val buffer = b.add(Flow[Quote].buffer(Math.max(window - 1, 1), OverflowStrategy.backpressure))
+    val buffer = b.add(Flow[Quote].buffer(window, OverflowStrategy.backpressure))
     val zip = b.add(Zip[Quote, Bollinger])
     val merge = b.add(Flow[(Quote, Bollinger)].map(t => t._1 ++ t._2))
 
@@ -47,5 +50,8 @@ object Flows {
 
     (rows.inlet, rows.outlet)
   }
+
+  // Chunks output into batches of rows
+  def chunked(count: Int = 100) = Flow[String].grouped(count).map(_.foldLeft(ByteString())((bs, s) => bs ++ ByteString(s)))
 
 }

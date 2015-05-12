@@ -2,7 +2,7 @@ package sample.random
 
 import java.time.LocalDate
 
-import CreditCard.Brand
+import sample.random.CreditCard.Brand
 import sample.util.Util
 
 import scala.util.Random

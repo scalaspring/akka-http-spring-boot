@@ -3,10 +3,9 @@ package sample.random
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-import CreditCard.Brand
+import sample.random.CreditCard.Brand
+import sample.random.Sex._
 import spray.json._
-
-import Sex._
 
 trait JsonProtocols extends DefaultJsonProtocol {
 

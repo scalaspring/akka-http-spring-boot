@@ -13,7 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Import
-import Flows._
+import sample.yahoo.Flows._
+
 import scala.concurrent.Future
 
 
@@ -29,9 +30,9 @@ trait BollingerQuoteService extends AkkaHttpService with StrictLogging {
 
   def getQuotes(symbol: String, period: Period): Future[Source[ByteString, _]] = {
     val quoteFuture: Future[Source[Quote, _]] = quoteService.history(symbol, period)
-    val csvFuture = quoteFuture.map(_.via(bollinger(window)).via(csv))
+    val csvFuture = quoteFuture.map(_.via(bollinger(window)).via(csv).via(chunked()))
 
-    csvFuture.map(_.map(ByteString(_)))
+    csvFuture
   }
 
   override val route: Route = {

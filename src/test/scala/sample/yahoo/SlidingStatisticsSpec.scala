@@ -20,7 +20,7 @@ class SlidingStatisticsSpec extends FlatSpec with TestContextManagement with Akk
   val permutations = Table(
     ("window", "input", "expected"),
     ( 5, List(1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610),
-      List((1.0, 0.0), (1.0, 0.0), (1.33333333333333, 0.333333333333333), (1.75, 0.916666666666667), (2.4, 2.8), (3.8, 7.7), (6.2, 19.7), (10.0, 52.0), (16.2, 135.7), (26.2, 355.7), (42.4, 930.8), (68.6, 2437.3), (111.0, 6380.5), (179.6, 16704.8), (290.6, 43733.3)).map(e => Expected(e._1, e._2)))
+      List((2.4, 2.8), (3.8, 7.7), (6.2, 19.7), (10.0, 52.0), (16.2, 135.7), (26.2, 355.7), (42.4, 930.8), (68.6, 2437.3), (111.0, 6380.5), (179.6, 16704.8), (290.6, 43733.3)).map(e => Expected(e._1, e._2)))
   )
 
   "Sliding statistics stage" should "properly calculate all valid permutations" in {

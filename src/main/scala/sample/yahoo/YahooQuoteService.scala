@@ -24,12 +24,12 @@ trait QuoteService {
   /**
    * Returns daily historical quotes for a specified trailing period, e.g. the past month.
    */
-  def history(symbol: String, period: Period): Future[Source[Quote, _]]
+  def history(symbol: String, period: Period): Future[Option[Source[Quote, _]]]
 
   /**
    * Returns daily historical quotes for a specified date range.
    */
-  def history(symbol: String, begin: LocalDate, end: LocalDate): Future[Source[Quote, _]]
+  def history(symbol: String, begin: LocalDate, end: LocalDate): Future[Option[Source[Quote, _]]]
 }
 
 @Component
@@ -60,9 +60,9 @@ class YahooQuoteService extends AkkaHttpClient with QuoteService with StrictLogg
     (records.inlet, convert.outlet)
   }
 
-  override def history(symbol: String, period: Period): Future[Source[Quote, _]] = history(symbol, LocalDate.now.minus(period), LocalDate.now)
+  override def history(symbol: String, period: Period): Future[Option[Source[Quote, _]]] = history(symbol, LocalDate.now.minus(period), LocalDate.now)
 
-  override def history(symbol: String, begin: LocalDate, end: LocalDate): Future[Source[Quote, _]] = {
+  override def history(symbol: String, begin: LocalDate, end: LocalDate): Future[Option[Source[Quote, _]]] = {
     require(end.isAfter(begin) || end.isEqual(begin), "invalid date range - end date must be on or after begin date")
 
     val uri = Uri(url.getPath).withQuery(params(symbol, begin, end))
@@ -72,8 +72,8 @@ class YahooQuoteService extends AkkaHttpClient with QuoteService with StrictLogg
     request(RequestBuilding.Get(uri)).flatMap { response =>
       logger.info(s"Received response with status ${response.status} from $uri")
       response.status match {
-        case OK => Future.successful(response.entity.dataBytes.via(parseResponse))
-        case NotFound => Future.failed(new IllegalArgumentException(s"Bad symbol or invalid date range (symbol: $symbol, begin: $begin, end: $end, uri: $uri"))
+        case OK => Future.successful(Some(response.entity.dataBytes.via(parseResponse)))
+        case NotFound => Future.successful(None)
         case _ => Unmarshal(response.entity).to[String].flatMap { entity =>
           val error = s"Request to $uri failed with status code ${response.status}"
           logger.error(error)

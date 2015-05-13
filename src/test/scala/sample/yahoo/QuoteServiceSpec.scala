@@ -2,8 +2,7 @@ package sample.yahoo
 
 import java.time.{LocalDate, Month, Period}
 
-import akka.stream.scaladsl.{Source, Sink, Flow}
-import akka.stream.stage.{PushStage, SyncDirective, Context, PushPullStage}
+import akka.stream.scaladsl.Source
 import com.github.scalaspring.akka.http.{AkkaHttpAutowiredImplicits, AkkaStreamsAutoConfiguration}
 import com.github.scalaspring.scalatest.TestContextManagement
 import com.typesafe.scalalogging.StrictLogging
@@ -14,6 +13,7 @@ import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.context.annotation.{ComponentScan, Configuration, Import}
 import org.springframework.test.context.ContextConfiguration
 
+import scala.concurrent.Future
 import scala.concurrent.duration._
 
 @Configuration
@@ -31,40 +31,27 @@ class QuoteServiceSpec extends FlatSpec with TestContextManagement with AkkaHttp
   @Autowired val quoteService: QuoteService = null
 
 
-  def date(quote: Quote): LocalDate = LocalDate.parse(quote("Date"))
-
-  def isAfter(quote: Quote, d: LocalDate): Boolean = date(quote).isAfter(d)
-
-  def testDescending[T <: Comparable[T]](prev: T, cur: T): Unit = if (prev.compareTo(cur) >= 0) throw new IllegalArgumentException(s"non-descending sequence detected (prev: $prev, cur: $cur)")
-
-//  def movingAverage[T](n: Int): Flow[T, T, Unit] = Flow[T].grouped()
-//  val descending: Flow[Quote, Option[Quote], Unit] = Flow[Quote].scan(None)((prev: Option[Quote], cur: Quote) => prev.map(if (date(_).isBefore(date(cur))) Some(cur) else None ))
-
-//  val sortSink: Sink[Quote, Seq[Quote]] = Sink.
-
-  lazy val bollingerFlow: Flow[Quote, Quote, Unit] = {
-    Flow[Quote]
-  }
-
   "Quote service" should "return data" in {
-    val getFuture = quoteService.history("YHOO", Period.ofWeeks(8))
-    val future = getFuture.flatMap(_.runFold(Seq[Quote]())((s, m) => s :+ m))
+    val getFuture: Future[Option[Source[Quote, _]]] = quoteService.history("YHOO", Period.ofWeeks(8))
+    val future: Future[Option[Seq[Quote]]] = getFuture.flatMap(
+      _.map(_.runFold(Seq[Quote]())((s, m) => s :+ m)         // Get the sequence of quotes from the Source
+        .map(Some(_))).getOrElse(Future.successful(None)))    // Map to a Future[Option[Seq[Quote]]]
 
     whenReady(future) { quotes =>
-      quotes should not be empty
-      logger.info(s"data:\n${quotes.mkString("\n")}")
+      quotes shouldBe defined
+      //logger.info(s"data:\n${quotes.map(_.mkString("\n"))}")
     }
   }
 
-  it should "throw an exception for bad symbol" in {
+  it should "return None for bad symbol" in {
     val future = quoteService.history("BLAH", Period.ofWeeks(8))
-    whenReady(future.failed)(_ shouldBe an [IllegalArgumentException])
+    whenReady(future)(_ shouldBe empty)
   }
 
-  it should "throw an exception for bad date range" in {
+  it should "return None for bad date range" in {
     // Note: Facebook went public in 2012
     val future = quoteService.history("FB", LocalDate.of(2010, Month.JANUARY, 1), LocalDate.of(2011, Month.JANUARY, 1))
-    whenReady(future.failed)(_ shouldBe an [IllegalArgumentException])
+    whenReady(future)(_ shouldBe empty)
   }
 
 }

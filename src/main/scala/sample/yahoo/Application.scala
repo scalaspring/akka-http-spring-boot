@@ -51,7 +51,7 @@ trait BollingerQuoteService extends AkkaHttpService with StrictLogging {
 
 @SpringBootApplication
 @Import(Array(classOf[AkkaHttpServerAutoConfiguration]))
-class Application extends BollingerQuoteService { override val window: Int = 20 }
+class Application extends BollingerQuoteService
 
 object Application extends App {
   SpringApplication.run(classOf[Application], args: _*)

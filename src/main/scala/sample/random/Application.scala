@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Import
 
 
-trait RandomService extends AkkaHttpService with JsonProtocols {
+trait RandomUserDataService extends AkkaHttpService with JsonProtocols {
 
   override val route: Route = {
     get {
@@ -32,7 +32,7 @@ trait RandomService extends AkkaHttpService with JsonProtocols {
 
 @SpringBootApplication
 @Import(Array(classOf[AkkaHttpServerAutoConfiguration]))
-class Application extends RandomService {}
+class Application extends RandomUserDataService {}
 
 object Application extends App {
   SpringApplication.run(classOf[Application], args: _*)

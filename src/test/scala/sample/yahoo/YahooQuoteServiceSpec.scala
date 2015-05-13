@@ -20,10 +20,10 @@ import scala.concurrent.duration._
 @ComponentScan
 @ContextConfiguration(
   loader = classOf[SpringApplicationContextLoader],
-  classes = Array(classOf[QuoteServiceSpec])
+  classes = Array(classOf[YahooQuoteServiceSpec])
 )
 @Import(Array(classOf[AkkaStreamsAutoConfiguration]))
-class QuoteServiceSpec extends FlatSpec with TestContextManagement with AkkaHttpAutowiredImplicits with Matchers with EitherValues with ScalaFutures with StrictLogging {
+class YahooQuoteServiceSpec extends FlatSpec with TestContextManagement with AkkaHttpAutowiredImplicits with Matchers with EitherValues with ScalaFutures with StrictLogging {
 
   // Yahoo takes more than a second to respond
   implicit val patience = PatienceConfig((10 seconds))

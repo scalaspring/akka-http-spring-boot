@@ -1,4 +1,4 @@
-package sample.extra
+package sample.yahoo.stage.extra
 
 import java.io.InputStream
 import java.nio.ByteBuffer

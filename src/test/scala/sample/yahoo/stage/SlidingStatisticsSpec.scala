@@ -1,4 +1,4 @@
-package sample.yahoo
+package sample.yahoo.stage
 
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import com.github.scalaspring.akka.http.{AkkaHttpAutowiredImplicits, AkkaStreamsAutoConfiguration}
@@ -9,7 +9,7 @@ import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.{FlatSpec, Matchers}
 import org.springframework.context.annotation.{Configuration, Import}
 import org.springframework.test.context.ContextConfiguration
-import sample.flow._
+import sample.yahoo.Statistics
 import sample.yahoo.StatisticsSpec.Expected
 
 @Configuration

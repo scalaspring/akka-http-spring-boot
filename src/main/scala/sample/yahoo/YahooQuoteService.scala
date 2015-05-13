@@ -16,7 +16,7 @@ import com.github.scalaspring.akka.http.AkkaHttpClient
 import com.typesafe.scalalogging.StrictLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import sample.flow.ParseRecord
+import sample.yahoo.stage.ParseRecord
 
 import scala.concurrent.Future
 
@@ -51,7 +51,7 @@ class YahooQuoteService extends AkkaHttpClient with QuoteService with StrictLogg
 
   // Converts a ByteString stream into a Quote stream
   protected lazy val parseResponse = Flow() { implicit b =>
-    val records = b.add(Flow[ByteString].transform[String](() => ParseRecord()).map(_.split(',')))
+    val records = b.add(Flow[ByteString].transform[String](() => ParseRecord()).map(_.trim.split(',')))
     val zipHeader = b.add(Flow[Array[String]].prefixAndTail(1).map(pt => pt._2.map((pt._1.head, _))).flatten(FlattenStrategy.concat))
     val quote = b.add(Flow[(Array[String], Array[String])].map(t => t._1.zip(t._2).foldLeft(Quote())((q, t) => q += t)))
 

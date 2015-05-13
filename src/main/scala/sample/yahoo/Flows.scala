@@ -4,8 +4,8 @@ import akka.stream.OverflowStrategy
 import akka.stream.scaladsl.FlowGraph.Implicits._
 import akka.stream.scaladsl._
 import akka.util.ByteString
-import sample.flow.{Statistics, _}
 import sample.yahoo.Bollinger._
+import sample.yahoo.stage._
 
 import scala.collection.immutable
 import scala.concurrent.Future

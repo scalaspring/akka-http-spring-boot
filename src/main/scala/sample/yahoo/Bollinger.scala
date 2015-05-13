@@ -1,7 +1,5 @@
 package sample.yahoo
 
-import sample.flow.Statistics
-
 case class Bollinger(lower: Double, middle: Double, upper: Double)
 
 object Bollinger {

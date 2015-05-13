@@ -1,4 +1,4 @@
-package sample.flow
+package sample.yahoo.stage.extra
 
 import akka.stream.stage.{Context, PushStage, SyncDirective}
 

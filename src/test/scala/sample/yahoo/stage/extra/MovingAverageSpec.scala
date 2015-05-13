@@ -1,4 +1,4 @@
-package sample.yahoo
+package sample.yahoo.stage.extra
 
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import com.github.scalaspring.akka.http.{AkkaHttpAutowiredImplicits, AkkaStreamsAutoConfiguration}
@@ -9,7 +9,6 @@ import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.{FlatSpec, Matchers}
 import org.springframework.context.annotation.{Configuration, Import}
 import org.springframework.test.context.ContextConfiguration
-import sample.flow._
 
 @Configuration
 @ContextConfiguration(classes = Array(classOf[MovingAverageSpec]))
@@ -33,7 +32,7 @@ class MovingAverageSpec extends FlatSpec with TestContextManagement with AkkaHtt
 
   "Moving average stage" should "properly calculate all valid permutations" in {
     forAll(permutations) { (window: Int, input: List[Double], expected: List[Double]) =>
-      val future = Source(input).via(Flow[Double].movingAverage(window)).runWith(Sink.fold(List[Double]())(_ :+ _))
+      val future = Source(input).via(Flow[Double].transform(() => MovingAverage(window))).runWith(Sink.fold(List[Double]())(_ :+ _))
       whenReady(future)(_ shouldBe expected)
     }
   }

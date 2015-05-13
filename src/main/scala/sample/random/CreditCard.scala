@@ -3,8 +3,7 @@ package sample.random
 import java.time.LocalDate
 
 import sample.random.CreditCard.Brand
-import sample.util.Util
-
+import sample.util
 import scala.util.Random
 
 case class CreditCard(brand: Brand, number: String, expiration: LocalDate)
@@ -45,9 +44,9 @@ object CreditCard {
   def random(brand: Brand): CreditCard = CreditCard(brand = brand, number = randomNumber(randomPrefix(brand), lengths(brand)), randomExpiration())
 
 
-  protected def randomBrand: Brand = Util.random(brands)
+  protected def randomBrand: Brand = util.random(brands)
 
-  protected def randomPrefix(brand: Brand): String = Util.random(prefixes(brand))
+  protected def randomPrefix(brand: Brand): String = util.random(prefixes(brand))
 
   protected def randomNumber(prefix: String, length: Int): String = {
 
@@ -65,7 +64,7 @@ object CreditCard {
     digits.foldLeft(new StringBuilder(digits.size + 1))((s, d) => s.append(d)).append(checkdigit).toString
   }
 
-  protected def randomExpiration(days: (Int, Int) = (3 * 30, 36 * 30)): LocalDate = LocalDate.now().plusDays(Util.random(days))
+  protected def randomExpiration(days: (Int, Int) = (3 * 30, 36 * 30)): LocalDate = LocalDate.now().plusDays(util.random(days))
 
 }
 

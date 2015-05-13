@@ -1,10 +1,10 @@
-package sample.util
+package sample
 
 import com.github.tototoshi.csv.CSVReader
 
 import scala.util.Random
 
-object Util {
+package object util {
 
   def random(range: (Int, Int)): Int = (range._1 + Random.nextInt(range._2 - range._1))
 

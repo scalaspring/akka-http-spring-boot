@@ -1,4 +1,4 @@
-package sample.extra
+package sample.yahoo.stage.extra
 
 import akka.stream.scaladsl.Source
 import akka.util.ByteString

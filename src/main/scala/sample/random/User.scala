@@ -1,6 +1,6 @@
 package sample.random
 
-import sample.util.Util
+import sample.util
 
 import scala.util.Random
 
@@ -62,10 +62,10 @@ object User {
   val (minHeight, maxHeight) = (weightRanges.keySet.min, weightRanges.keySet.max)
 
 
-  protected def randomHeight: Int = Util.random(minHeight, maxHeight)
+  protected def randomHeight: Int = util.random(minHeight, maxHeight)
 
   protected def randomWeight(height: Int) = weightRanges(height) match {
-    case (min, max) => Util.random(min, max)
+    case (min, max) => util.random(min, max)
   }
 
   protected def randomEmail(name: Name) = s"${name.first}.${name.last}@${domains(Random.nextInt(domains.size))}".toLowerCase

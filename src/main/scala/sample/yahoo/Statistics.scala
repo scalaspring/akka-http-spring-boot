@@ -1,4 +1,4 @@
-package sample.flow
+package sample.yahoo
 
 case class Statistics[T] private (population: Boolean, M: Double, S: Double, k: Int)(implicit num: Numeric[T]) {
 

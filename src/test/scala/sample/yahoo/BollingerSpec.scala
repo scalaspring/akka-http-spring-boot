@@ -10,9 +10,9 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers}
 import org.springframework.context.annotation.{Configuration, Import}
 import org.springframework.test.context.ContextConfiguration
-import sample.flow._
-import sample.util.Util
+import sample.util
 import sample.yahoo.BollingerSpec.Expected
+import sample.yahoo.stage._
 
 @Configuration
 @ContextConfiguration(classes = Array(classOf[BollingerSpec]))
@@ -21,8 +21,8 @@ class BollingerSpec extends FlatSpec with TestContextManagement with AkkaHttpAut
 
   "Bollinger stage" should "properly calculate bands" in {
     val window = 14
-    val input: List[Double] = Util.openCsvResource("/bollinger_test_data.csv").map(_("Close").toDouble).toList
-    val expected: List[Expected] = Util.openCsvResource("/bollinger_test_data.csv").toList.dropRight(window - 1).map(r => Expected(r("BB(14) Lower").toDouble, r("SMA(14)").toDouble, r("BB(14) Upper").toDouble))
+    val input: List[Double] = util.openCsvResource("/bollinger_test_data.csv").map(_("Close").toDouble).toList
+    val expected: List[Expected] = util.openCsvResource("/bollinger_test_data.csv").toList.dropRight(window - 1).map(r => Expected(r("BB(14) Lower").toDouble, r("SMA(14)").toDouble, r("BB(14) Upper").toDouble))
 
     val bollingerFlow = Flow[Double].slidingStatistics(window).map(Bollinger(_))
 

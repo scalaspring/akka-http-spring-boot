@@ -1,12 +1,12 @@
 package sample.yahoo
 
 import com.typesafe.scalalogging.StrictLogging
+import org.scalactic.Tolerance._
 import org.scalactic.TripleEqualsSupport.Spread
 import org.scalatest.prop.TableDrivenPropertyChecks._
 import org.scalatest.{FlatSpec, Matchers}
 import sample.flow._
 import sample.yahoo.StatisticsSpec.Expected
-import org.scalactic.Tolerance._
 
 
 object StatisticsSpec {

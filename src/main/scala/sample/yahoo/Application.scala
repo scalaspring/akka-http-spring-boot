@@ -4,7 +4,7 @@ import java.time.Period
 
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.model.StatusCodes._
-import akka.http.scaladsl.model.{ContentType, HttpEntity, MediaTypes}
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.scaladsl._
@@ -21,10 +21,7 @@ import scala.concurrent.Future
 
 trait BollingerQuoteService extends AkkaHttpService with StrictLogging {
 
-  val period = Period.ofMonths(6)
   val window = 14
-  val contentType = ContentType(MediaTypes.`text/plain`)
-//  val contentType = ContentType(MediaTypes.`text/csv`)
 
   @Autowired val quoteService: QuoteService = null
 
@@ -35,12 +32,13 @@ trait BollingerQuoteService extends AkkaHttpService with StrictLogging {
 
   override val route: Route = {
     get {
-      pathPrefix("quote") {
-        path(Segment) { symbol =>
+      path("quote" / Segment) { symbol =>
+        parameters('months.as[Int] ? 6) { months =>
           complete {
+            val period = Period.ofMonths(months)
             getQuotes(symbol, period).map[ToResponseMarshallable] {
-              case Some(s) => HttpEntity.Chunked.fromData(contentType, s.via(csv).via(chunked()))
-              case None => NotFound -> s"Invalid symbol '$symbol' or period $period"
+              case Some(s) => HttpEntity.Chunked.fromData(ContentTypes.`text/plain`, s.via(csv).via(chunked()))
+              case None => NotFound -> s"No data found for the given symbol '$symbol' or period $period"
             }
           }
         }

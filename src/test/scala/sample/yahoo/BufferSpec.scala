@@ -9,9 +9,6 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FlatSpec, Matchers}
 import org.springframework.context.annotation.{Configuration, Import}
 import org.springframework.test.context.ContextConfiguration
-import sample.flow._
-import sample.util.Util
-import sample.yahoo.BollingerSpec.Expected
 
 import scala.concurrent.Future
 

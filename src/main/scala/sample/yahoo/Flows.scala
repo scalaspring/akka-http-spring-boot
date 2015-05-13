@@ -1,7 +1,5 @@
 package sample.yahoo
 
-import java.nio.ByteBuffer
-
 import akka.stream.OverflowStrategy
 import akka.stream.scaladsl.FlowGraph.Implicits._
 import akka.stream.scaladsl._

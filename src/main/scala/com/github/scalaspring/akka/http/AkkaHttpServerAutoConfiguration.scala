@@ -9,11 +9,24 @@ import org.springframework.context.annotation.{Bean, Configuration}
 
 import scala.reflect.runtime.universe._
 
+/**
+ * Defines an Akka HTTP server that serves all Akka HTTP routes found in the application context.
+ *
+ * Usage: Import this configuration into your application context.
+ *
+ * Example:
+ *
+ * {{{
+ *   @Configuration
+ *   @Import(Array(classOf[AkkaHttpServerAutoConfiguration]))
+ *   class Configuration extends EchoService
+ * }}}
+ */
 @Configuration
 @EnableConfigurationProperties
 class AkkaHttpServerAutoConfiguration extends AkkaStreamsAutoConfiguration {
 
-  // This is intentionally not required, even though a route is required, so that we can provide a useful message
+  // Note: This is intentionally not required, even though a route is required, so that we can provide a useful message
   // below if the user doesn't define a route
   @Autowired(required=false)
   private val route: Route = null

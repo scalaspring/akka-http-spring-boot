@@ -23,9 +23,7 @@ lazy val root = (project in file(".")).
       "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
       "com.typesafe.akka" %% "akka-http-scala-experimental" % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaHttpVersion,
-      "com.github.scalaspring" %% "akka-spring-boot" % "0.1.2-SNAPSHOT",
-      "com.github.tototoshi" %% "scala-csv" % "1.2.1",
-      "org.apache.commons" % "commons-collections4" % "4.0"
+      "com.github.scalaspring" %% "akka-spring-boot" % "0.1.2-SNAPSHOT"
       // The following dependencies support configuration validation
       //"javax.validation" % "validation-api" % "1.1.0.Final",
       //"javax.el" % "javax.el-api" % "3.0.1-b04",
@@ -40,7 +38,8 @@ lazy val root = (project in file(".")).
       "org.scalatest" %% "scalatest" % "2.2.4",
       "com.github.scalaspring" %% "scalatest-spring" % "0.2.0",
       "org.springframework" % "spring-test" % springVersion,
-      "com.typesafe.akka" %% "akka-testkit" % akkaVersion
+      "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
+      "com.jsuereth" %% "scala-arm" % "1.4"
     ).map { _ % "test" },
     // Publishing settings
     publishMavenStyle       := true,

@@ -6,11 +6,12 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.Http.ServerBinding
 import akka.http.scaladsl.server.Route
 import com.typesafe.scalalogging.StrictLogging
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.SmartLifecycle
 
-import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
-
 
 object ServerBindingLifecycle {
   
@@ -24,7 +25,17 @@ object ServerBindingLifecycle {
 
 }
 
-class ServerBindingLifecycle (val settings: ServerSettings, val route: Route) extends SmartLifecycle with AkkaHttpAutowiredImplicits with StrictLogging {
+/**
+ * Manages the lifecycle of an Akka HTTP `ServerBinding`, ensuring its lifecycle matches that of the containing
+ * Spring application context.
+ *
+ * This is an internal management class and is not intended for direct use. An instance is automatically created by
+ * [AkkaHttpServerAutoConfiguration].
+ *
+ * @param settings binding settings
+ * @param route route definition
+ */
+class ServerBindingLifecycle (val settings: ServerSettings, val route: Route) extends SmartLifecycle with AkkaStreamsAutowiredImplicits with StrictLogging {
 
   import ServerBindingLifecycle._
 
@@ -35,6 +46,9 @@ class ServerBindingLifecycle (val settings: ServerSettings, val route: Route) ex
   // Read-only binding property
   private var _binding: Option[Future[ServerBinding]] = None
   def binding = _binding
+
+  @Value("${http.server.lifecycle.timeout:30 seconds}")
+  protected val timeout: String = "0"
 
   override def getPhase: Int = 0
   override def isAutoStartup: Boolean = true
@@ -57,6 +71,9 @@ class ServerBindingLifecycle (val settings: ServerSettings, val route: Route) ex
         }
       })
 
+      // Wait for the server binding to complete before returning
+      Await.result(_binding.get, Duration(timeout))
+
     } else {
       logger.warn(s"Unexpected server state (state=${state}), ignoring call to start()")
     }
@@ -66,8 +83,8 @@ class ServerBindingLifecycle (val settings: ServerSettings, val route: Route) ex
 
     _binding.map { future =>
       future.andThen {
-        case Success(b) => {
 
+        case Success(b) => {
           if (_state.compareAndSet(Started, Stopping)) {
             logger.info(s"Stopping server on ${b.localAddress.getHostString}:${b.localAddress.getPort}")
 
@@ -87,6 +104,7 @@ class ServerBindingLifecycle (val settings: ServerSettings, val route: Route) ex
             callback.run()
           }
         }
+
         case Failure(t) => {
           logger.info("Server failed to bind, ignoring call to stop()")
           callback.run()

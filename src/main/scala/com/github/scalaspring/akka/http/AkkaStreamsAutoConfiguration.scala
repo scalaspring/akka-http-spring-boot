@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.{Bean, Configuration, Import}
 
+/**
+ * Configures Spring to materialize Akka Streams flows via Akka.
+ */
 @Configuration
 @Import(Array(classOf[AkkaAutoConfiguration]))
 class AkkaStreamsAutoConfiguration extends AkkaAutowiredImplicits with SpringLogging {
@@ -15,7 +18,10 @@ class AkkaStreamsAutoConfiguration extends AkkaAutowiredImplicits with SpringLog
 
 }
 
-trait AkkaHttpAutowiredImplicits extends AkkaAutowiredImplicits {
+/**
+ * Defines autowired implicits needed to materialize Akka Streams flows.
+ */
+trait AkkaStreamsAutowiredImplicits extends AkkaAutowiredImplicits {
 
   @Autowired implicit val flowMaterializer: FlowMaterializer = null
 

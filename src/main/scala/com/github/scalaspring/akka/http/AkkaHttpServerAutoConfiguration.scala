@@ -19,7 +19,7 @@ import scala.reflect.runtime.universe._
  * {{{
  *   @Configuration
  *   @Import(Array(classOf[AkkaHttpServerAutoConfiguration]))
- *   class Configuration extends EchoService
+ *   class Configuration extends MyService
  * }}}
  */
 @Configuration
@@ -32,13 +32,16 @@ class AkkaHttpServerAutoConfiguration extends AkkaStreamsAutoConfiguration {
   private val route: Route = null
 
   /**
-   * Creates a server settings that reads from configuration, if none supplied.
+   * Defines a server settings bean with values read from configuration.
+   * Set the `http.server.interface` and `http.server.port` configuration properties to set server configuration.
+   * Note: This an automatic bean definition that can be overridden by supplying your own bean definition.
    */
   @Bean @ConditionalOnMissingBean(Array(classOf[ServerSettings]))
   def serverSettings = new ServerSettings()
 
   /**
-   * Creates the server binding for the route defined in the application context.
+   * Defines the server binding lifecycle bean that creates the server for the route defined in the application context.
+   * Note: This an automatic bean definition that can be overridden by supplying your own bean definition.
    */
   @Bean @ConditionalOnMissingBean(Array(classOf[ServerBindingLifecycle]))
   def serverBindingLifecycle(settings: ServerSettings): ServerBindingLifecycle = {
@@ -49,5 +52,12 @@ class AkkaHttpServerAutoConfiguration extends AkkaStreamsAutoConfiguration {
     }
     else ServerBindingLifecycle(settings, route)
   }
+
+  /**
+   * Defines an HTTP client that can be used for outgoing HTTP connections.
+   * Note: This an automatic bean definition that can be overridden by supplying your own bean definition.
+   */
+  @Bean @ConditionalOnMissingBean(Array(classOf[HttpClient]))
+  def httpClient: HttpClient = AkkaHttpClient()
 
 }

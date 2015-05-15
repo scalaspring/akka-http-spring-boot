@@ -7,8 +7,6 @@ import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.pattern.AskSupport
-import com.github.scalaspring.akka.http.AkkaHttpMultiServiceSpec.{EchoService, ReverseService}
 import com.github.scalaspring.scalatest.TestContextManagement
 import com.typesafe.scalalogging.StrictLogging
 import org.scalatest.concurrent.ScalaFutures
@@ -25,15 +23,16 @@ import scala.concurrent.duration._
   loader = classOf[SpringApplicationContextLoader],
   classes = Array(classOf[AkkaHttpMultiServiceSpec.Configuration])
 )
-class AkkaHttpMultiServiceSpec extends FlatSpec with TestContextManagement with AkkaHttpClient with Matchers with AskSupport with ScalaFutures with StrictLogging {
+class AkkaHttpMultiServiceSpec extends FlatSpec with TestContextManagement with AkkaStreamsAutowiredImplicits with Matchers with ScalaFutures with StrictLogging {
 
   implicit val patience = PatienceConfig((10 seconds))    // Allow time for server startup
 
   @Autowired val settings: ServerSettings = null
+  @Autowired val client: HttpClient = null
 
   "Echo service" should "echo" in {
     val name = "name"
-    val future = request(Get(s"http://${settings.interface}:${settings.port}/multi/echo/$name"))
+    val future = client.request(Get(s"http://${settings.interface}:${settings.port}/multi/echo/$name"))
 
     whenReady(future) { response =>
       response.status shouldBe OK
@@ -43,7 +42,7 @@ class AkkaHttpMultiServiceSpec extends FlatSpec with TestContextManagement with 
 
   "Reverse service" should "reverse" in {
     val name = "name"
-    val future = request(Get(s"http://${settings.interface}:${settings.port}/multi/reverse/$name"))
+    val future = client.request(Get(s"http://${settings.interface}:${settings.port}/multi/reverse/$name"))
 
     whenReady(future) { response =>
       response.status shouldBe OK

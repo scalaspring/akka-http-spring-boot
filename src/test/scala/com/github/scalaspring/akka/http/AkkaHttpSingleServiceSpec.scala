@@ -7,7 +7,6 @@ import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.pattern.AskSupport
 import com.github.scalaspring.scalatest.TestContextManagement
 import com.typesafe.scalalogging.StrictLogging
 import org.scalatest.concurrent.ScalaFutures
@@ -16,23 +15,24 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.context.annotation.{Bean, Import}
 import org.springframework.test.context.ContextConfiguration
+import resource._
 
 import scala.concurrent.duration._
-import resource._
 
 @ContextConfiguration(
   loader = classOf[SpringApplicationContextLoader],
   classes = Array(classOf[AkkaHttpSingleServiceSpec.Configuration])
 )
-class AkkaHttpSingleServiceSpec extends FlatSpec with TestContextManagement with AkkaHttpClient with Matchers with AskSupport with ScalaFutures with StrictLogging {
+class AkkaHttpSingleServiceSpec extends FlatSpec with TestContextManagement with AkkaStreamsAutowiredImplicits with Matchers with ScalaFutures with StrictLogging {
 
   implicit val patience = PatienceConfig((10 seconds))    // Allow time for server startup
 
   @Autowired val settings: ServerSettings = null
+  @Autowired val client: HttpClient = null
 
   "Echo service" should "echo" in {
     val name = "name"
-    val future = request(Get(s"http://${settings.interface}:${settings.port}/single/echo/$name"))
+    val future = client.request(Get(s"http://${settings.interface}:${settings.port}/single/echo/$name"))
 
     whenReady(future) { response =>
       //logger.info(s"""received response "$response"""")
@@ -54,13 +54,13 @@ object AkkaHttpSingleServiceSpec {
   }
 
   trait EchoService extends AkkaHttpService {
-    override def route: Route = {
+    abstract override def route: Route = {
       get {
         path("single"/ "echo" / Segment) { name =>
           complete(name)
         }
       }
-    }
+    } ~ super.route
   }
 
 }

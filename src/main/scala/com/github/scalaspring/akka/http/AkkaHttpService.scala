@@ -1,10 +1,13 @@
 package com.github.scalaspring.akka.http
 
+import akka.actor.ActorSystem
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
 import org.springframework.beans.BeanInstantiationException
 import org.springframework.context.annotation.Bean
 import org.springframework.util.ClassUtils
+
+import scala.concurrent.ExecutionContextExecutor
 
 /**
  * Base trait used to define services. Defines the service route bean used by [AkkaHttpServerAutoConfiguration].
@@ -34,7 +37,10 @@ import org.springframework.util.ClassUtils
  *
  * }}}
  */
-trait AkkaHttpService extends AkkaStreamsAutowiredImplicits {
+trait AkkaHttpService {
+
+  protected implicit val system: ActorSystem
+  protected implicit def executor: ExecutionContextExecutor
 
   def route: Route = reject
 

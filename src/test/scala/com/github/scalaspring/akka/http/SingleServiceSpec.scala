@@ -21,9 +21,9 @@ import scala.concurrent.duration._
 
 @ContextConfiguration(
   loader = classOf[SpringApplicationContextLoader],
-  classes = Array(classOf[AkkaHttpSingleServiceSpec.Configuration])
+  classes = Array(classOf[SingleServiceSpec.Configuration])
 )
-class AkkaHttpSingleServiceSpec extends FlatSpec with TestContextManagement with AkkaStreamsAutowiredImplicits with Matchers with ScalaFutures with StrictLogging {
+class SingleServiceSpec extends FlatSpec with TestContextManagement with AkkaStreamsAutowiredImplicits with Matchers with ScalaFutures with StrictLogging {
 
   implicit val patience = PatienceConfig((10 seconds))    // Allow time for server startup
 
@@ -44,11 +44,11 @@ class AkkaHttpSingleServiceSpec extends FlatSpec with TestContextManagement with
 }
 
 
-object AkkaHttpSingleServiceSpec {
+object SingleServiceSpec {
 
   @Configuration
   @Import(Array(classOf[AkkaHttpServerAutoConfiguration]))
-  class Configuration extends EchoService {
+  class Configuration extends AkkaHttpServer with EchoService {
     @Bean
     def serverSettings = new ServerSettings(port = managed(new ServerSocket(0)).map(_.getLocalPort).opt.get)
   }

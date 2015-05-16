@@ -36,9 +36,10 @@ lazy val root = (project in file(".")).
     // Test dependencies
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "2.2.4",
-      "com.github.scalaspring" %% "scalatest-spring" % "0.2.0",
+      "com.github.scalaspring" %% "scalatest-spring" % "0.2.1-SNAPSHOT",
       "org.springframework" % "spring-test" % springVersion,
       "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
+      "com.typesafe.akka" %% "akka-http-testkit-scala-experimental" % akkaHttpVersion,
       "com.jsuereth" %% "scala-arm" % "1.4"
     ).map { _ % "test" },
     // Publishing settings

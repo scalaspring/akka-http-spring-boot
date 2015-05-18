@@ -25,7 +25,7 @@ import scala.concurrent.duration._
 )
 class MultiServiceSpec extends FlatSpec with TestContextManagement with AkkaStreamsAutowiredImplicits with Matchers with ScalaFutures with StrictLogging {
 
-  implicit val patience = PatienceConfig((10 seconds))    // Allow time for server startup
+  implicit val patience = PatienceConfig((10.seconds))    // Allow time for server startup
 
   @Autowired val settings: ServerSettings = null
   @Autowired val client: HttpClient = null
@@ -63,15 +63,15 @@ object MultiServiceSpec {
 
   trait EchoService extends AkkaHttpService {
     abstract override def route: Route = {
-      (get & path("multi"/"echo" / Segment)) { name =>
+      (get & path("multi"/"echo"/Segment)) { name =>
         complete(name)
-      }
-    } ~ super.route
+      } ~ super.route
+    }
   }
 
   trait ReverseService extends AkkaHttpService {
     abstract override def route: Route = {
-      (get & path("multi"/"reverse" / Segment)) { name =>
+      (get & path("multi"/"reverse"/Segment)) { name =>
         complete(name.reverse)
       }
     } ~ super.route

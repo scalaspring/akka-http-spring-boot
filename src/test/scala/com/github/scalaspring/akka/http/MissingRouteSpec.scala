@@ -13,11 +13,11 @@ import scala.concurrent.duration._
 
 class MissingRouteSpec extends FlatSpec with AkkaStreamsAutowiredImplicits with Matchers with AskSupport with ScalaFutures with StrictLogging {
 
-  implicit val patience = PatienceConfig((10 seconds))    // Allow time for server startup
+  implicit val patience = PatienceConfig((10.seconds))    // Allow time for server startup
 
-  "Context startup" should "fail" in {
+  "Context startup" should "fail when no route supplied" in {
     a [BeanCreationException] should be thrownBy
-      managed(SpringApplication.run(classOf[MissingRouteSpec.Configuration])).map(c => c).opt.get
+      managed(SpringApplication.run(classOf[MissingRouteSpec.Configuration])).map(identity).opt.get
   }
 
 }

@@ -6,7 +6,7 @@ val akkaHttpVersion = "1.0-RC2"
 val springVersion = "4.1.6.RELEASE"
 val springBootVersion = "1.2.3.RELEASE"
 
-lazy val root = (project in file(".")).
+lazy val AkkaHttpSpringBoot = (project in file(".")).
   settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*).
   settings(
     organization        := "com.github.scalaspring",

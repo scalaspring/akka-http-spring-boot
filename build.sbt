@@ -11,7 +11,7 @@ lazy val AkkaHttpSpringBoot = (project in file(".")).
   settings(
     organization        := "com.github.scalaspring",
     name                := "akka-http-spring-boot",
-    description         := "Integrates Akka HTTP and Spring Boot for rapid, robust service development using minimal configuration",
+    description         := "Integrates Scala Akka HTTP and Spring Boot for rapid, robust service development with minimal configuration.\nPre-configured server components require little more than a route to get a service up and running.",
     scalaVersion        := "2.11.6",
     crossScalaVersions  := Seq("2.10.5"),
     javacOptions        := Seq("-source", "1.7", "-target", "1.7"),
@@ -37,7 +37,7 @@ lazy val AkkaHttpSpringBoot = (project in file(".")).
     // Test dependencies
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "2.2.4",
-      "com.github.scalaspring" %% "scalatest-spring" % "0.2.1-SNAPSHOT",
+      "com.github.scalaspring" %% "scalatest-spring" % "0.2.1",
       "org.springframework" % "spring-test" % springVersion,
       "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
       "com.typesafe.akka" %% "akka-http-testkit-scala-experimental" % akkaHttpVersion,

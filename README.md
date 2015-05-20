@@ -1,70 +1,80 @@
-# Akka HTTP Spring Boot Integration Library
+### Akka HTTP Spring Boot Integration Library
 
 Integrates Scala Akka HTTP and Spring Boot for rapid, robust service development with minimal configuration.
 Pre-configured server components require little more than a route to get a service up and running.
 
-## Key Benefits
+#### Key Benefits
 1. Simple creation of microservices
-   * Create your service route and implement it via a trivial application class to get going
+   * Create your service route and implement it via a trivial server class to get going
    * Easily send outbound requests to aggregate data from other services
 2. Highly testable, easily composable services
    * Full support for testing service routes and injecting an HTTP client to mock outbound requests during testing
-   * Services are implemented via stackable Scala traits, letting you ditch the monster service route and instead design bite-sized services that are easily composable in your application class
+   * Services are implemented via stackable Scala traits to promote bite-sized, reusable services that are easily composed in your server class. Ditch the monster service route.
 3. Pre-configured server that's managed for you
    * No need to manage the server lifecycle. An Akka HTTP server will be started when your application starts and terminated when your application is stopped.
-   * Provide your own configuration via standard Spring Boot configuration (application.yaml) to override defaults, if needed
+   * Provide your own configuration via standard Spring Boot configuration (application.yaml or other property source) to override defaults, if needed
 4. Full Spring dependency injection support
    * Autowire any dependency into your services and leverage the full Spring ecosystem
    * Use existing Spring components to enable gradual migration or reuse of suitable existing enterprise components
-   * Avoid the anti-patterns of using Scala implicits or abstract types to implement dependency injection. Scala implicits are excellent, but can be abused, IMHO, to pass dependencies around an application resulting in tight coupling and less maintainable code.
+   * Avoid the anti-patterns of using Scala implicits or abstract types to implement dependency injection. Both implicits and abstract types are excellent, but can be abused, IMHO, to pass dependencies around an application resulting in tight coupling and less maintainable code.
 
-## Getting Started
+#### Getting Started
 
-### build.sbt
+##### build.sbt
 
 ````scala
 libraryDependencies ++= "com.github.scalaspring" %% "akka-http-spring-boot" % "0.2.0"
 ````
 
-### Create a Spring Configuration
+##### Create a service trait
 
-Create a configuration class that extends the ActorSystemConfiguration trait and imports the AkkaAutoConfiguration
+Extend `AkkaHttpService` to define your service
 
 ````scala
-@Configuration
-@ComponentScan
-@Import(Array(classOf[AkkaAutoConfiguration]))
-class Configuration extends ActorSystemConfiguration {
-
-  // Note: the EchoActor class is part of Akka test kit
-  @Bean
-  def echoActor = actorOf[EchoActor]
-
+// Echos the last segment of the path
+trait EchoService extends AkkaHttpService {
+  abstract override def route: Route = {
+    get {
+      path("echo" / Segment) { name =>
+        complete(name)
+      }
+    }
+  } ~ super.route
 }
 ````
 
-### Testing Your Configuration
+###### Notes on the code
 
-Create a ScalaTest-based test that uses the configuration
+* Be sure to use `abstract override` and to concatenate `super.route` when defining your route to make your services composable. See `MultiServiceSpec` in the test source for an example of a server implementing multiple, stackable services.
+
+##### Create the server configuration and run it
+
+Extend `AkkaHttpServer` and import `AkkaHttpServerAutoConfiguration` to implement your service(s)
 
 ````scala
-@ContextConfiguration(
-  loader = classOf[SpringApplicationContextLoader],
-  classes = Array(classOf[AkkaAutoConfigurationSpec.Configuration])
-)
-class AkkaAutoConfigurationSpec extends FlatSpec with TestContextManagement with Matchers with AskSupport with ScalaFutures with StrictLogging {
+@Configuration
+@Import(Array(classOf[AkkaHttpServerAutoConfiguration]))
+class Application extends AkkaHttpServer with EchoService
 
-  implicit val timeout: Timeout = (1 seconds)
+object Application extends App {
+  SpringApplication.run(classOf[Application], args: _*)
+}
+````
 
-  @Autowired val echoActor: ActorRef = null
+##### Test your service route
 
-  "Echo actor" should "receive and echo message" in {
-    val message = "test message"
-    val future = echoActor ? message
+Create a ScalaTest-based test that extends the service trait to test your service route
 
-    whenReady(future) { result =>
-      logger.info(s"""received result "$result"""")
-      result should equal(message)
+````scala
+@Configuration
+@ContextConfiguration(classes = Array(classOf[EchoServiceSpec]))
+@Import(Array(classOf[AkkaStreamsAutoConfiguration]))
+class EchoServiceSpec extends FlatSpec with TestContextManagement with EchoService with ScalatestRouteTest with Matchers {
+
+  "Echo service" should "echo" in {
+    Get(s"/echo/test") ~> route ~> check {
+      status shouldBe OK
+      responseAs[String] shouldBe "test"
     }
   }
 

@@ -24,7 +24,7 @@ lazy val AkkaHttpSpringBoot = (project in file(".")).
       "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
       "com.typesafe.akka" %% "akka-http-scala-experimental" % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaHttpVersion,
-      "com.github.scalaspring" %% "akka-spring-boot" % "0.1.2-SNAPSHOT"
+      "com.github.scalaspring" %% "akka-spring-boot" % "0.2.0"
       // The following dependencies support configuration validation
       //"javax.validation" % "validation-api" % "1.1.0.Final",
       //"javax.el" % "javax.el-api" % "3.0.1-b04",

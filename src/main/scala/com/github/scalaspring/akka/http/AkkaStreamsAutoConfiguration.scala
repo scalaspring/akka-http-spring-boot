@@ -23,6 +23,6 @@ class AkkaStreamsAutoConfiguration extends AkkaAutowiredImplicits with SpringLog
  */
 trait AkkaStreamsAutowiredImplicits extends AkkaAutowiredImplicits {
 
-  @Autowired implicit val flowMaterializer: FlowMaterializer = null
+  @Autowired implicit val materializer: FlowMaterializer = null
 
 }

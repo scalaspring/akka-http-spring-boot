@@ -1,4 +1,4 @@
-### Akka HTTP Spring Boot Integration Library
+### Akka HTTP Spring Boot Integration (akka-http-spring-boot)
 
 Integrates Scala Akka HTTP and Spring Boot for rapid, robust service development with minimal configuration.
 Pre-configured server components require little more than a route to get a service up and running.
@@ -31,13 +31,11 @@ libraryDependencies ++= "com.github.scalaspring" %% "akka-http-spring-boot" % "0
 Extend `AkkaHttpService` to define your service
 
 ````scala
-// Echos the last segment of the path
+// Echo a path segment
 trait EchoService extends AkkaHttpService {
   abstract override def route: Route = {
-    get {
-      path("echo" / Segment) { name =>
-        complete(name)
-      }
+    (get & path("echo" / Segment)) { name =>
+      complete(name)
     }
   } ~ super.route
 }
@@ -78,5 +76,61 @@ class EchoServiceSpec extends FlatSpec with TestContextManagement with EchoServi
     }
   }
 
+}
+````
+
+##### Making outbound requests
+
+Inject the Akka HTTP-based client into your service and call its `request` method to make outbound requests.
+The HttpClient bean is automatically created as part of the `AkkaHttpServerAutoConfiguration` configuration.
+
+````scala
+// Primitive site proxy (ex: http://localhost:8080/finance.yahoo.com)
+trait ProxyService extends AkkaHttpService {
+
+  @Autowired val client: HttpClient = null
+
+  abstract override def route: Route = {
+    (get & path("proxy" / Segment)) { site =>
+      complete(client.request(Get(s"http://$site/")))
+    }
+  } ~ super.route
+}
+````
+
+###### Notes on the code
+
+* The autowired `HttpClient` will be injected by Spring (standard injection) upon startup.
+
+##### Putting it all together - Multiple service in a single server
+
+````scala
+// Echo a path segment
+trait EchoService extends AkkaHttpService {
+  abstract override def route: Route = {
+    (get & path("echo" / Segment)) { name =>
+      complete(name)
+    }
+  } ~ super.route
+}
+
+// Primitive site proxy (ex: http://localhost:8080/finance.yahoo.com)
+trait ProxyService extends AkkaHttpService {
+
+  @Autowired val client: HttpClient = null
+
+  abstract override def route: Route = {
+    (get & path("proxy" / Segment)) { site =>
+      complete(client.request(Get(s"http://$site/")))
+    }
+  } ~ super.route
+}
+
+@SpringBootApplication
+@Import(Array(classOf[AkkaHttpServerAutoConfiguration]))
+class Application extends AkkaHttpServer with EchoService with ProxyService
+
+object Application extends App {
+  SpringApplication.run(classOf[Application], args: _*)
 }
 ````

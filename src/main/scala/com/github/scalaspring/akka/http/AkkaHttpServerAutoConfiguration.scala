@@ -1,13 +1,14 @@
 package com.github.scalaspring.akka.http
 
 import akka.http.scaladsl.server.Route
+import com.github.scalaspring.akka.SpringLogging
 import org.springframework.beans.factory.BeanCreationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
-import org.springframework.context.annotation.{Bean, Configuration}
+import org.springframework.context.annotation.{Import, Bean, Configuration}
 
-import scala.reflect.runtime.universe._
+import scala.reflect.runtime.universe.typeTag
 
 /**
  * Defines an Akka HTTP server that serves all Akka HTTP routes found in the application context.
@@ -24,7 +25,8 @@ import scala.reflect.runtime.universe._
  */
 @Configuration
 @EnableConfigurationProperties
-class AkkaHttpServerAutoConfiguration extends AkkaStreamsAutoConfiguration {
+@Import(Array(classOf[AkkaStreamsAutoConfiguration]))
+class AkkaHttpServerAutoConfiguration extends AkkaStreamsAutowiredImplicits with SpringLogging {
 
   // Note: This is intentionally not required, even though a route is required, so that we can provide a useful message
   // below if the user doesn't define a route

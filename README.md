@@ -26,9 +26,9 @@ Pre-configured server components require little more than a route to get a servi
 libraryDependencies ++= "com.github.scalaspring" %% "akka-http-spring-boot" % "0.2.0"
 ````
 
-##### Create a service trait
+##### Creating a service
 
-Extend `AkkaHttpService` to define your service
+Extend `AkkaHttpService` and override the `route` method to define your service
 
 ````scala
 // Echo a path segment
@@ -59,7 +59,7 @@ object Application extends App {
 }
 ````
 
-##### Test your service route
+#### Testing
 
 Create a ScalaTest-based test that extends the service trait to test your service route
 
@@ -79,7 +79,7 @@ class EchoServiceSpec extends FlatSpec with TestContextManagement with EchoServi
 }
 ````
 
-##### Making outbound requests
+#### Outbound Requests
 
 Inject the Akka HTTP-based client into your service and call its `request` method to make outbound requests.
 The HttpClient bean is automatically created as part of the `AkkaHttpServerAutoConfiguration` configuration.
@@ -98,11 +98,11 @@ trait ProxyService extends AkkaHttpService {
 }
 ````
 
-###### Notes on the code
+##### Notes on the code
 
 * The autowired `HttpClient` will be injected by Spring (standard injection) upon startup.
 
-##### Putting it all together - Multiple service in a single server
+#### Putting it all together - stackable services
 
 ````scala
 // Echo a path segment

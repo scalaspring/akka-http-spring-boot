@@ -1,12 +1,12 @@
 import sbt.Keys._
 
 // Common dependency versions
-val akkaVersion = "2.3.10"
-val akkaHttpVersion = "1.0-RC2"
+val akkaVersion = "2.3.11"
+val akkaHttpVersion = "1.0-RC3"
 val springVersion = "4.1.6.RELEASE"
-val springBootVersion = "1.2.3.RELEASE"
+val springBootVersion = "1.2.4.RELEASE"
 
-lazy val AkkaHttpSpringBoot = (project in file(".")).
+lazy val `akka-http-spring-boot` = (project in file(".")).
   settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*).
   settings(
     organization        := "com.github.scalaspring",
@@ -22,9 +22,9 @@ lazy val AkkaHttpSpringBoot = (project in file(".")).
       //"com.typesafe.akka" %% "akka-actor" % akkaVersion,
       "org.springframework" % "spring-context" % springVersion,
       "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
-      "com.typesafe.akka" %% "akka-http-scala-experimental" % akkaHttpVersion,
+      "com.typesafe.akka" %% "akka-http-experimental" % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaHttpVersion,
-      "com.github.scalaspring" %% "akka-spring-boot" % "0.2.0"
+      "com.github.scalaspring" %% "akka-spring-boot" % "0.2.1"
       // The following dependencies support configuration validation
       //"javax.validation" % "validation-api" % "1.1.0.Final",
       //"javax.el" % "javax.el-api" % "3.0.1-b04",
@@ -40,7 +40,7 @@ lazy val AkkaHttpSpringBoot = (project in file(".")).
       "com.github.scalaspring" %% "scalatest-spring" % "0.2.1",
       "org.springframework" % "spring-test" % springVersion,
       "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
-      "com.typesafe.akka" %% "akka-http-testkit-scala-experimental" % akkaHttpVersion,
+      "com.typesafe.akka" %% "akka-http-testkit-experimental" % akkaHttpVersion,
       "com.jsuereth" %% "scala-arm" % "1.4"
     ).map { _ % "test" },
     // Publishing settings

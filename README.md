@@ -16,14 +16,14 @@ Pre-configured server components require little more than a route to get a servi
 4. Full Spring dependency injection support
    * Autowire any dependency into your services and leverage the full Spring ecosystem
    * Use existing Spring components to enable gradual migration or reuse of suitable existing enterprise components
-   * Avoid the anti-patterns of using Scala implicits or abstract types to implement dependency injection. Both implicits and abstract types are excellent, but can be abused, IMHO, to pass dependencies around an application resulting in tight coupling and less maintainable code.
+   * Avoid the downsides of using Scala implicits or abstract types to implement dependency injection. While both implicits and abstract types are excellent language features, they can also lead to tight coupling and less maintainable code.
 
 #### Getting Started
 
 ##### build.sbt
 
 ````scala
-libraryDependencies ++= "com.github.scalaspring" %% "akka-http-spring-boot" % "0.2.0"
+libraryDependencies ++= "com.github.scalaspring" %% "akka-http-spring-boot" % "0.2.1"
 ````
 
 ##### Creating a service

@@ -45,5 +45,6 @@ object AkkaHttpClient {
    * Default simple connection flow provider.
    */
   protected def defaultConnectionFlow(uri: Uri)(implicit system: ActorSystem): Flow[HttpRequest, HttpResponse, Future[OutgoingConnection]] =
-    Http().outgoingConnection(uri.authority.host.address(), uri.effectivePort)
+    Http().outgoingConnection(uri.authority.host.address, uri.authority.port)
+
 }

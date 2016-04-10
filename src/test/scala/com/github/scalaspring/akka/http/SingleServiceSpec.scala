@@ -25,7 +25,7 @@ import scala.concurrent.duration._
 )
 class SingleServiceSpec extends FlatSpec with TestContextManagement with AkkaStreamsAutowiredImplicits with Matchers with ScalaFutures with StrictLogging {
 
-  implicit val patience = PatienceConfig((10.seconds))    // Allow time for server startup
+  implicit val patience = PatienceConfig(10.seconds)    // Allow time for server startup
 
   @Autowired val settings: ServerSettings = null
   @Autowired val client: HttpClient = null

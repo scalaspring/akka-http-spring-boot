@@ -1,6 +1,6 @@
 package com.github.scalaspring.akka.http
 
-import akka.stream.{ActorFlowMaterializer, FlowMaterializer}
+import akka.stream.{ActorMaterializer, Materializer}
 import com.github.scalaspring.akka.{AkkaAutoConfiguration, AkkaAutowiredImplicits, SpringLogging}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
@@ -13,8 +13,8 @@ import org.springframework.context.annotation.{Bean, Configuration, Import}
 @Import(Array(classOf[AkkaAutoConfiguration]))
 class AkkaStreamsAutoConfiguration extends AkkaAutowiredImplicits with SpringLogging {
 
-  @Bean @ConditionalOnMissingBean(Array(classOf[FlowMaterializer]))
-  def flowMaterializer = ActorFlowMaterializer()
+  @Bean @ConditionalOnMissingBean(Array(classOf[Materializer]))
+  def materializer = ActorMaterializer()
 
 }
 
@@ -23,6 +23,6 @@ class AkkaStreamsAutoConfiguration extends AkkaAutowiredImplicits with SpringLog
  */
 trait AkkaStreamsAutowiredImplicits extends AkkaAutowiredImplicits {
 
-  @Autowired implicit val materializer: FlowMaterializer = null
+  @Autowired implicit val materializer: Materializer = null
 
 }

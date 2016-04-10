@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicReference
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.Http.ServerBinding
 import akka.http.scaladsl.server.Route
+import com.github.scalaspring.akka.ActorSystemLifecycle
 import com.typesafe.scalalogging.StrictLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.SmartLifecycle
@@ -21,7 +22,8 @@ object ServerBindingLifecycle {
   case object Started extends State
   case object Stopping extends State
 
-  def apply(settings: ServerSettings, route: Route) = new ServerBindingLifecycle(settings, route)
+  def apply(settings: ServerSettings, route: Route) =
+    new ServerBindingLifecycle(settings, route)
 
 }
 
@@ -32,10 +34,16 @@ object ServerBindingLifecycle {
  * This is an internal management class and is not intended for direct use. An instance is automatically created by
  * [AkkaHttpServerAutoConfiguration].
  *
+ * The Spring lifecycle phase (default 10) can be adjusted by setting the http.server.lifecycle.phase configuration
+ * property. Note that the phase MUST be greater than that of the ActorSystemLifecycle bean to ensure the underlying
+ * ActorSystem is started before, and is terminated after, the Akka HTTP server.
+ *
  * @param settings binding settings
  * @param route route definition
  */
-class ServerBindingLifecycle (val settings: ServerSettings, val route: Route) extends SmartLifecycle with AkkaStreamsAutowiredImplicits with StrictLogging {
+class ServerBindingLifecycle (val settings: ServerSettings, val route: Route)
+  extends SmartLifecycle with AkkaStreamsAutowiredImplicits with StrictLogging
+{
 
   import ServerBindingLifecycle._
 
@@ -48,10 +56,14 @@ class ServerBindingLifecycle (val settings: ServerSettings, val route: Route) ex
   def binding = _binding
 
   @Value("${http.server.lifecycle.timeout:30 seconds}")
-  protected val timeout: String = "0"
+  protected val timeout: String = "30 seconds"
 
-  override def getPhase: Int = 0
+  @Value("${http.server.lifecycle.phase:10}")
+  protected val phase: Int = 10
+  override def getPhase: Int = phase
+
   override def isAutoStartup: Boolean = true
+
   override def isRunning: Boolean = (_state.get() == Started)
 
   override def start(): Unit = {
@@ -84,13 +96,13 @@ class ServerBindingLifecycle (val settings: ServerSettings, val route: Route) ex
     _binding.map { future =>
       future.andThen {
 
-        case Success(b) => {
+        case Success(binding) => {
           if (_state.compareAndSet(Started, Stopping)) {
-            logger.info(s"Stopping server on ${b.localAddress.getHostString}:${b.localAddress.getPort}")
+            logger.info(s"Stopping server on ${binding.localAddress.getHostString}:${binding.localAddress.getPort}")
 
-            doStop(b).andThen {
-              case Success(_) => logger.info(s"Server on ${b.localAddress.getHostString}:${b.localAddress.getPort} stopped")
-              case Failure(t) => logger.error(s"Error stopping server on ${b.localAddress.getHostString}:${b.localAddress.getPort}", t)
+            doStop(binding).andThen {
+              case Success(_) => logger.info(s"Server on ${binding.localAddress.getHostString}:${binding.localAddress.getPort} stopped")
+              case Failure(t) => logger.error(s"Error stopping server on ${binding.localAddress.getHostString}:${binding.localAddress.getPort}", t)
             }.andThen {
               case r => {
                 _state.set(Stopped)

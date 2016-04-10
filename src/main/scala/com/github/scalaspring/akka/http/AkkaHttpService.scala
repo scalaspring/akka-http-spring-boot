@@ -3,7 +3,7 @@ package com.github.scalaspring.akka.http
 import akka.actor.ActorSystem
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
-import akka.stream.FlowMaterializer
+import akka.stream.Materializer
 import org.springframework.beans.BeanInstantiationException
 import org.springframework.context.annotation.Bean
 import org.springframework.util.ClassUtils
@@ -42,7 +42,7 @@ trait AkkaHttpService {
 
   protected implicit val system: ActorSystem
   protected implicit def executor: ExecutionContextExecutor
-  protected implicit def materializer: FlowMaterializer
+  protected implicit def materializer: Materializer
 
   def route: Route = reject
 

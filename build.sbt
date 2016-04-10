@@ -1,10 +1,11 @@
 import sbt.Keys._
 
 // Common dependency versions
-val akkaVersion = "2.3.11"
-val akkaHttpVersion = "1.0-RC3"
-val springVersion = "4.1.6.RELEASE"
-val springBootVersion = "1.2.4.RELEASE"
+val akkaVersion = "2.4.2"
+val akkaHttpVersion = "2.4.2"
+val akkaHttpTestKitVersion = "2.4.2-RC3"
+val springVersion = "4.2.5.RELEASE"
+val springBootVersion = "1.3.3.RELEASE"
 
 lazy val `akka-http-spring-boot` = (project in file(".")).
   settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*).
@@ -12,8 +13,8 @@ lazy val `akka-http-spring-boot` = (project in file(".")).
     organization        := "com.github.scalaspring",
     name                := "akka-http-spring-boot",
     description         := "Integrates Scala Akka HTTP and Spring Boot for rapid, robust service development with minimal configuration.\nPre-configured server components require little more than a route to get a service up and running.",
-    scalaVersion        := "2.11.6",
-    crossScalaVersions  := Seq("2.10.5"),
+    scalaVersion        := "2.11.8",
+    crossScalaVersions  := Seq("2.10.6"),
     javacOptions        := Seq("-source", "1.7", "-target", "1.7"),
     scalacOptions       ++= Seq("-feature", "-deprecation"),
     resolvers           += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
@@ -24,7 +25,7 @@ lazy val `akka-http-spring-boot` = (project in file(".")).
       "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
       "com.typesafe.akka" %% "akka-http-experimental" % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaHttpVersion,
-      "com.github.scalaspring" %% "akka-spring-boot" % "0.2.1"
+      "com.github.scalaspring" %% "akka-spring-boot" % "0.3.1"
       // The following dependencies support configuration validation
       //"javax.validation" % "validation-api" % "1.1.0.Final",
       //"javax.el" % "javax.el-api" % "3.0.1-b04",
@@ -37,10 +38,10 @@ lazy val `akka-http-spring-boot` = (project in file(".")).
     // Test dependencies
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "2.2.4",
-      "com.github.scalaspring" %% "scalatest-spring" % "0.2.1",
+      "com.github.scalaspring" %% "scalatest-spring" % "0.3.1",
       "org.springframework" % "spring-test" % springVersion,
       "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
-      "com.typesafe.akka" %% "akka-http-testkit-experimental" % akkaHttpVersion,
+      "com.typesafe.akka" %% "akka-http-testkit-experimental" % akkaHttpTestKitVersion,
       "com.jsuereth" %% "scala-arm" % "1.4"
     ).map { _ % "test" },
     // Publishing settings

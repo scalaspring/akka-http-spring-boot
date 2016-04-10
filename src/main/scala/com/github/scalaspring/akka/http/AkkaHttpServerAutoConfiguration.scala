@@ -1,7 +1,7 @@
 package com.github.scalaspring.akka.http
 
 import akka.http.scaladsl.server.Route
-import com.github.scalaspring.akka.SpringLogging
+import com.github.scalaspring.akka.{ActorSystemLifecycle, SpringLogging}
 import org.springframework.beans.factory.BeanCreationException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean

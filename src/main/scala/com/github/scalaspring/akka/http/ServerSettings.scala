@@ -3,6 +3,7 @@ package com.github.scalaspring.akka.http
 import org.springframework.boot.context.properties.ConfigurationProperties
 
 import scala.beans.BeanProperty
+import ServerSettings._
 
 /**
  * HTTP server settings with defaults.
@@ -23,12 +24,14 @@ import scala.beans.BeanProperty
  */
 @ConfigurationProperties(prefix = "http.server")
 class ServerSettings(
-  @BeanProperty var interface: String = "localhost",
-  @BeanProperty var port: Int = 8080) {
+  @BeanProperty var interface: String = DefaultInterface,
+  @BeanProperty var port: Int = DefaultPort) {
 
-  def this() = this(interface = "localhost", port = 8080)
+  //def this() = this(interface = DefaultInterface, port = DefaultPort)
 
-//  @BeanProperty var interface: String = "localhost"
-//  @BeanProperty var port: Int = 8080
+}
 
+object ServerSettings {
+  val DefaultInterface = "localhost"
+  val DefaultPort = 8080
 }

@@ -23,7 +23,7 @@ Pre-configured server components require little more than a route to get a servi
 ##### build.sbt
 
 ````scala
-libraryDependencies ++= "com.github.scalaspring" %% "akka-http-spring-boot" % "0.2.1"
+libraryDependencies ++= "com.github.scalaspring" %% "akka-http-spring-boot" % "0.3.1"
 ````
 
 ##### Creating a service
@@ -101,6 +101,8 @@ trait ProxyService extends AkkaHttpService {
 ##### Notes on the code
 
 * The autowired `HttpClient` will be injected by Spring (standard injection) upon startup.
+* Configuration Properties
+  * Use the `http.server.lifecycle.phase` configuration property to control when the server is unbound and terminated. The default value is 10 to ensure its termination before the underlying actor system. 
 
 #### Putting it all together - stackable services
 

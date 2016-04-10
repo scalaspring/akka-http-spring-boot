@@ -25,7 +25,7 @@ lazy val `akka-http-spring-boot` = (project in file(".")).
       "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
       "com.typesafe.akka" %% "akka-http-experimental" % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaHttpVersion,
-      "com.github.scalaspring" %% "akka-spring-boot" % "0.3.1-SNAPSHOT"
+      "com.github.scalaspring" %% "akka-spring-boot" % "0.3.1"
       // The following dependencies support configuration validation
       //"javax.validation" % "validation-api" % "1.1.0.Final",
       //"javax.el" % "javax.el-api" % "3.0.1-b04",
@@ -38,7 +38,7 @@ lazy val `akka-http-spring-boot` = (project in file(".")).
     // Test dependencies
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "2.2.4",
-      "com.github.scalaspring" %% "scalatest-spring" % "0.3.1-SNAPSHOT",
+      "com.github.scalaspring" %% "scalatest-spring" % "0.3.1",
       "org.springframework" % "spring-test" % springVersion,
       "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
       "com.typesafe.akka" %% "akka-http-testkit-experimental" % akkaHttpTestKitVersion,

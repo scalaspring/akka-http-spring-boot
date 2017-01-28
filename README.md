@@ -23,7 +23,7 @@ Pre-configured server components require little more than a route to get a servi
 ##### build.sbt
 
 ````scala
-libraryDependencies ++= "com.github.scalaspring" %% "akka-http-spring-boot" % "0.3.1"
+libraryDependencies ++= "com.github.scalaspring" %% "akka-http-spring-boot" % "0.3.2-SNAPSHOT"
 ````
 
 ##### Creating a service

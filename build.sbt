@@ -1,11 +1,11 @@
 import sbt.Keys._
 
 // Common dependency versions
-val akkaVersion = "2.4.2"
-val akkaHttpVersion = "2.4.2"
-val akkaHttpTestKitVersion = "2.4.2-RC3"
-val springVersion = "4.2.5.RELEASE"
-val springBootVersion = "1.3.3.RELEASE"
+val akkaVersion = "2.4.16"
+val akkaHttpVersion = "10.0.3"
+val akkaHttpTestKitVersion = "10.0.3"
+val springVersion = "4.3.6.RELEASE"
+val springBootVersion = "1.4.4.RELEASE"
 
 lazy val `akka-http-spring-boot` = (project in file(".")).
   settings(net.virtualvoid.sbt.graph.Plugin.graphSettings: _*).
@@ -23,9 +23,9 @@ lazy val `akka-http-spring-boot` = (project in file(".")).
       //"com.typesafe.akka" %% "akka-actor" % akkaVersion,
       "org.springframework" % "spring-context" % springVersion,
       "org.springframework.boot" % "spring-boot-starter" % springBootVersion,
-      "com.typesafe.akka" %% "akka-http-experimental" % akkaHttpVersion,
-      "com.typesafe.akka" %% "akka-http-spray-json-experimental" % akkaHttpVersion,
-      "com.github.scalaspring" %% "akka-spring-boot" % "0.3.1"
+      "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
+      "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
+      "com.github.scalaspring" %% "akka-spring-boot" % "0.3.2-SNAPSHOT"
       // The following dependencies support configuration validation
       //"javax.validation" % "validation-api" % "1.1.0.Final",
       //"javax.el" % "javax.el-api" % "3.0.1-b04",
@@ -40,9 +40,10 @@ lazy val `akka-http-spring-boot` = (project in file(".")).
       "org.scalatest" %% "scalatest" % "2.2.4",
       "com.github.scalaspring" %% "scalatest-spring" % "0.3.1",
       "org.springframework" % "spring-test" % springVersion,
+      "org.springframework.boot" % "spring-boot-starter-test" % springBootVersion,
       "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
-      "com.typesafe.akka" %% "akka-http-testkit-experimental" % akkaHttpTestKitVersion,
-      "com.jsuereth" %% "scala-arm" % "1.4"
+      "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpTestKitVersion,
+      "com.jsuereth" %% "scala-arm" % "2.0"
     ).map { _ % "test" },
     // Publishing settings
     publishMavenStyle       := true,
